@@ -81,6 +81,10 @@
             currentTeacherData = getTeacherDetails(userId);
             System.out.println("received teacher :" + currentTeacherData.toString());
         }
+        
+        Long studentCount = getStudentUsersCount();
+        Long teachersCount  = getTeacherUsersCount();
+        
 
     %>
 
@@ -245,7 +249,7 @@
 
                                         <div class="col-xs-8 col-md-8 col-sm-8 col-lg-8">
                                             <h4 style="font-size:1.1vw;">Students</h4>
-                                            <h3 style="font-size:3.5vw;">5000</h3>
+                                            <h3 style="font-size:3.5vw;"><%=studentCount%></h3>
                                         </div>
                                     </div>
 
@@ -266,7 +270,7 @@
 
                                         <div class="col-xs-8 col-sm-8 col-lg-8">
                                             <h4 style="font-size:1.1vw;">Teachers</h4>
-                                            <h3 style="font-size:3.5vw;">150</h3>
+                                            <h3 style="font-size:3.5vw;"><%=teachersCount%></h3>
                                         </div>
                                     </div>
 

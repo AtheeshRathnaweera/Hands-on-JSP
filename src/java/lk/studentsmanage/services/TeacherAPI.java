@@ -6,6 +6,7 @@
 package lk.studentsmanage.services;
 
 
+import java.util.ArrayList;
 import lk.studentsmanage.models.TeacherModel;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -19,5 +20,8 @@ public interface TeacherAPI {
     
     @GET("getTeacher/{teacherNic}")
     Call<TeacherModel> getTeacherDetails(@Path("teacherNic") String teacherNic);
+    
+    @GET("users/teacherUsersCount")
+    Call<ArrayList<Long>> getTeacherUsersCount();
     
 }

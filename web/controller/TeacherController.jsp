@@ -4,6 +4,7 @@
     Author     : User
 --%>
 
+<%@page import="java.util.ArrayList"%>
 <%@page import="lk.studentsmanage.services.TeacherAPI"%>
 <%@page import="java.util.List"%>
 <%@page import="lk.studentsmanage.models.TeacherModel"%>
@@ -18,7 +19,6 @@
 
 
 <%!
-    
     public TeacherModel getTeacherDetails(String nic) {
 
         TeacherAPI teacherAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(TeacherAPI.class);
@@ -30,7 +30,7 @@
         try {
 
             teacherData = teacherDataCall.execute().body();
-            System.out.println("received teacher : "+teacherData.toString());
+            System.out.println("received teacher : " + teacherData.toString());
 
         } catch (Exception e) {
             System.out.println("Exception in teacher Controller : " + e);
@@ -39,6 +39,30 @@
         return teacherData;
 
     }
-   
+
+    public Long getTeacherUsersCount() {
+
+        TeacherAPI teacherAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(TeacherAPI.class);
+        Call<ArrayList<Long>> teacherCountCall = teacherAPI.getTeacherUsersCount();
+
+        ArrayList<Long> results = new ArrayList<>();
+        Long tCount = null;
+
+        try {
+            results = teacherCountCall.execute().body();
+
+            System.out.println("result : " + results.toString() + "  " + results.get(0));
+            tCount = results.get(0);
+
+        } catch (Exception e) {
+            System.out.println("Exception in Teacher controller : " + e);
+
+        }
+
+        return tCount;
+
+    }
+
+
 %>
 
