@@ -1,6 +1,8 @@
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="lk.studentsmanage.models.StudentModel"%>
 <%@include file="controller/StudentController.jsp" %>
+<%@include file="controller/TeacherController.jsp" %>
+
 <html>
     <head>
         <title>Home</title>
@@ -69,13 +71,15 @@
         }
 
         StudentModel currentStudentData = null;
+        TeacherModel currentTeacherData = null;
 
         if (role.equals("student")) {
             currentStudentData = getStudentDetails(userId);
             System.out.println("received student : " + currentStudentData.toString());
 
         } else {
-            System.out.println("Teacher data will be loaded.");
+            currentTeacherData = getTeacherDetails(userId);
+            System.out.println("received teacher :" + currentTeacherData.toString());
         }
 
     %>
@@ -118,7 +122,7 @@
                     <a class="dropdown-item"  data-toggle="modal" data-target="#userProfileView">View profile</a>
                     <a class="dropdown-item" href="#">Another action</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#"><strong>Log Out</strong></a>
+                    <a class="dropdown-item" href="index.jsp?status=logout"><strong>Log Out</strong></a>
                 </div>
             </div>
         </nav>
@@ -137,6 +141,9 @@
                         </button>
                     </div>
                     <div class="modal-body">
+
+                        <%if (role.equals("student")) {%>
+                        <!--                        Student user details -->
                         <form>
                             <div class="form-group row">
                                 <div class="enrolledDateClass col-md-6">
@@ -173,6 +180,42 @@
                             </div>
 
                         </form>
+                        <!--                        Student user details -->
+                        <%} else if (role.equals("teacher")) {%>
+                        <!--                        Teacher profile modal-->
+                        <form>
+                            <div class="form-group row">
+                                <div class="enrolledDateClass col-md-12">
+                                    <label for="teacherUserName">User Name</label>
+                                    <input class="form-control" id="teacherUserName" disabled value="<%=currentTeacherData.getNic()%>">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="teacherFirstName">First Name</label>
+                                <input class="form-control" id="teacherFirstName" disabled value="<%=currentTeacherData.getFirstName()%>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="teacherLastName">Last Name</label>
+                                <input class="form-control" id="teacherLastName" disabled value="<%=currentTeacherData.getLastName()%>">
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="bdayClass col-md-6">
+                                    <label for="teacherTel">Contact Number</label>
+                                    <input class="form-control" id="teacherTel" disabled value="<%=currentTeacherData.getTelephoneNumber()%>">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="teacherAddress">Address</label>
+                                <textarea class="form-control" id="teacherAddress" disabled style="resize: none;"><%=currentTeacherData.getAddress()%></textarea>
+                            </div>
+
+                        </form>
+                            <!--                        Teacher profile modal-->
+                        <%}%>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

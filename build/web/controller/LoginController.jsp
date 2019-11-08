@@ -21,7 +21,7 @@
 
     if (actionLogIn.equals("login")) {
 
-        System.out.println(" student : Log in started.");
+        System.out.println("Log in started.");
 
         String userName = request.getParameter("userName");
         String userPassword = request.getParameter("password");

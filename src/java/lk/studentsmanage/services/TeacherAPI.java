@@ -5,7 +5,8 @@
  */
 package lk.studentsmanage.services;
 
-import lk.studentsmanage.models.StudentModel;
+
+import lk.studentsmanage.models.TeacherModel;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -14,10 +15,9 @@ import retrofit2.http.Path;
  *
  * @author User
  */
-public interface StudentAPI {
+public interface TeacherAPI {
     
-    @GET("getStudent/{admissionNum}")
-    Call<StudentModel> getStudentDetails(@Path("admissionNum") String admissionNum);
-
+    @GET("getTeacher/{teacherNic}")
+    Call<TeacherModel> getTeacherDetails(@Path("teacherNic") String teacherNic);
     
 }
