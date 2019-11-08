@@ -4,32 +4,32 @@
     Author     : User
 --%>
 
+<%@page import="lk.studentsmanage.models.UserModel"%>
+<%@page import="lk.studentsmanage.utils.Values"%>
+<%@page import="lk.studentsmanage.utils.RetrofitClient"%>
+<%@page import="lk.studentsmanage.services.LoginAPI"%>
 <%@page import="retrofit2.Response"%>
 <%@page import="retrofit2.Call"%>
-<%@page import="Models.UserModel"%>
-<%@page import="Services.LoginAPI"%>
-<%@page import="Utils.Values"%>
-<%@page import="Utils.RetrofitClient"%>
+
+
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
+
 
 <%
-    String action = request.getParameter("action");
-    String userName = "not found";
-    String userPassword = "not found";
+    String actionLogIn = request.getParameter("action");
 
-    if (action.equals("login")) {
+    if (actionLogIn.equals("login")) {
 
-        System.out.println("Log in started.");
+        System.out.println(" student : Log in started.");
 
-        userName = request.getParameter("userName");
-        userPassword = request.getParameter("password");
+        String userName = request.getParameter("userName");
+        String userPassword = request.getParameter("password");
 
         UserModel user = new UserModel();
 
-        user.setUserName(userName);
-        user.setUserPassword(userPassword);
+        user.setUserId(userName);
+        user.setPassword(userPassword);
 
         LoginAPI loginApi = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(LoginAPI.class);
 
@@ -38,23 +38,74 @@
         Response<UserModel> res = null;
         UserModel u = null;
 
-        try {
-            res = login.execute();
-            u = res.body();
+        System.out.println("student login status :  " + response.getStatus());
 
-            if (userName.equals("atheesh") && userPassword.equals("mahela")) {
-                System.out.println("matched");
-                response.sendRedirect("../homePage.html");
+        res = login.execute();
+        u = res.body();
+
+        System.out.println("students login res : " + u.toString());
+
+        if (u != null) {
+            if (u.getUserRole() != null) {
+                session.setAttribute("userId", u.getUserId());
+                session.setAttribute("userRole", u.getUserRole());
+                response.sendRedirect("../homePage.jsp");
+
             } else {
-                System.out.println("not matched");
-                //request.setAttribute("errorMessage", "Invalid user or password");
-                //request.getRequestDispatcher("../index.html").forward(request, response);
-
+                System.out.println("Log in failed.");
+                response.sendRedirect("../index.jsp?err=upinc");
             }
-
-        } catch (Exception e) {
+        } else {
+            System.out.println("Login failed.");
             response.sendRedirect("../index.jsp?err=upinc");
+        }
 
+    } else if (actionLogIn.equals("signin")) {
+        System.out.println("Signin started");
+
+        String userName = request.getParameter("userName");
+        String userPassword = request.getParameter("password");
+        String role = request.getParameter("role");
+
+        UserModel user = new UserModel();
+
+        user.setUserId(userName);
+        user.setPassword(userPassword);
+        user.setUserRole(role);
+
+        System.out.println(user.toString());
+
+        LoginAPI signinApi = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(LoginAPI.class);
+        
+        Call<UserModel> signin = null;
+
+        if (role.equals("student")) {
+            signin = signinApi.signInStudent(user);
+        } else {
+            signin = signinApi.signInTeacher(user);
+        }
+
+        Response<UserModel> res = null;
+        UserModel u = null;
+
+        System.out.println("signin status :  " + response.getStatus());
+
+        res = signin.execute();
+        u = res.body();
+
+        if (u != null) {
+            if (u.getUserRole() != null) {
+                session.setAttribute("userId", u.getUserId());
+                session.setAttribute("userRole", u.getUserRole());
+                response.sendRedirect("../homePage.jsp");
+
+            } else {
+                System.out.println("Signin in failed.");
+                response.sendRedirect("../index.jsp?err=upinc");
+            }
+        } else {
+            System.out.println("Signin failed.");
+            response.sendRedirect("../index.jsp?err=upinc");
         }
 
     }
@@ -62,12 +113,3 @@
 
 %>
 
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    <body>
-
-    </body>
-</html>
