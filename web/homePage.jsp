@@ -48,6 +48,15 @@
                 left: auto;
             }
 
+            /* Set black background color, white text and some padding */
+            footer {
+                background-color: #555;
+                color: white;
+                position:fixed;
+                bottom:0;
+                left:0;
+            }
+
 
 
 
@@ -81,10 +90,9 @@
             currentTeacherData = getTeacherDetails(userId);
             System.out.println("received teacher :" + currentTeacherData.toString());
         }
-        
+
         Long studentCount = getStudentUsersCount();
-        Long teachersCount  = getTeacherUsersCount();
-        
+        Long teachersCount = getTeacherUsersCount();
 
     %>
 
@@ -218,7 +226,7 @@
                             </div>
 
                         </form>
-                            <!--                        Teacher profile modal-->
+                        <!--                        Teacher profile modal-->
                         <%}%>
                     </div>
                     <div class="modal-footer">
@@ -387,6 +395,10 @@
         </div>
         <!--        Navigation bar-->
 
+
+        <footer class="container-fluid text-center">
+            <p>Footer Text</p>
+        </footer>
 
 
         <script>

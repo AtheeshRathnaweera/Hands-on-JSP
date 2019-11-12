@@ -18,18 +18,29 @@ public class StudentModel {
     private Date bday;
     private String address;
     private Date enrolledDate;
+    private int currentClassId;
 
     public StudentModel() {
     }
 
-    public StudentModel(Long admissionNumber, String firstName, String lastName, Date bday, String address, Date enrolledDate) {
+    public StudentModel(Long admissionNumber, String firstName, String lastName, Date bday, String address, Date enrolledDate, int currentClassId) {
         this.admissionNumber = admissionNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.bday = bday;
         this.address = address;
         this.enrolledDate = enrolledDate;
+        this.currentClassId = currentClassId;
     }
+
+    public int getCurrentClassId() {
+        return currentClassId;
+    }
+
+    public void setCurrentClassId(int currentClassId) {
+        this.currentClassId = currentClassId;
+    }
+
 
     public Long getAdmissionNumber() {
         return admissionNumber;
