@@ -15,15 +15,15 @@ public class StudentModel {
     private Long admissionNumber;
     private String firstName;
     private String lastName;
-    private Date bday;
+    private String bday;
     private String address;
-    private Date enrolledDate;
+    private String enrolledDate;
     private int currentClassId;
 
     public StudentModel() {
     }
 
-    public StudentModel(Long admissionNumber, String firstName, String lastName, Date bday, String address, Date enrolledDate, int currentClassId) {
+    public StudentModel(Long admissionNumber, String firstName, String lastName, String bday, String address, String enrolledDate, int currentClassId) {
         this.admissionNumber = admissionNumber;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -32,15 +32,6 @@ public class StudentModel {
         this.enrolledDate = enrolledDate;
         this.currentClassId = currentClassId;
     }
-
-    public int getCurrentClassId() {
-        return currentClassId;
-    }
-
-    public void setCurrentClassId(int currentClassId) {
-        this.currentClassId = currentClassId;
-    }
-
 
     public Long getAdmissionNumber() {
         return admissionNumber;
@@ -66,11 +57,11 @@ public class StudentModel {
         this.lastName = lastName;
     }
 
-    public Date getBday() {
+    public String getBday() {
         return bday;
     }
 
-    public void setBday(Date bday) {
+    public void setBday(String bday) {
         this.bday = bday;
     }
 
@@ -82,18 +73,30 @@ public class StudentModel {
         this.address = address;
     }
 
-    public Date getEnrolledDate() {
+    public String getEnrolledDate() {
         return enrolledDate;
     }
 
-    public void setEnrolledDate(Date enrolledDate) {
+    public void setEnrolledDate(String enrolledDate) {
         this.enrolledDate = enrolledDate;
+    }
+
+    public int getCurrentClassId() {
+        return currentClassId;
+    }
+
+    public void setCurrentClassId(int currentClassId) {
+        this.currentClassId = currentClassId;
     }
 
     @Override
     public String toString() {
-        return "Student{" + "admissionNumber=" + admissionNumber + ", firstName=" + firstName + ", lastName=" + lastName + ", bday=" + bday + ", address=" + address + ", enrolledDate=" + enrolledDate + '}';
+        return "StudentModel{" + "admissionNumber=" + admissionNumber + ", firstName=" + firstName + ", lastName=" + lastName + ", bday=" + bday + ", address=" + address + ", enrolledDate=" + enrolledDate + ", currentClassId=" + currentClassId + '}';
     }
+
+   
+
+    
     
     
     

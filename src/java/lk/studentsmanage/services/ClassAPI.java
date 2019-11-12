@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lk.studentsmanage.models.ClassModel;
 import lk.studentsmanage.models.StudentModel;
+import lk.studentsmanage.models.TeacherModel;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -26,6 +27,9 @@ public interface ClassAPI {
     
     @GET("classes/getStudents/{classId}")
     Call<List<StudentModel>> getAllStudentsByClass(@Path("classId") int classId);
+    
+     @GET("classes/getTeacher/{classId}")
+    Call<TeacherModel> getClassTeacher(@Path("classId") int classId);
     
     @POST("addClass")
     Call<Boolean> saveAClass(@Body ClassModel classdto);

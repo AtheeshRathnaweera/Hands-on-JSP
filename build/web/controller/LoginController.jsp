@@ -49,6 +49,7 @@
             if (u.getUserRole() != null) {
                 session.setAttribute("userId", u.getUserId());
                 session.setAttribute("userRole", u.getUserRole());
+                session.setAttribute("save_status","0");
                 response.sendRedirect("../homePage.jsp");
 
             } else {
@@ -97,6 +98,7 @@
             if (u.getUserRole() != null) {
                 session.setAttribute("userId", u.getUserId());
                 session.setAttribute("userRole", u.getUserRole());
+                session.setAttribute("save_status","0");
                 response.sendRedirect("../homePage.jsp");
 
             } else {

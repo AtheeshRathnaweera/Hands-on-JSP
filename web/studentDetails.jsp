@@ -27,7 +27,6 @@
         <link href="assets/styles/topNavigation.css" rel="stylesheet" type="text/css">
 
 
-
         <style>
 
             /*             Small devices (landscape phones, 576px and up)*/
@@ -69,16 +68,67 @@
                 background-color: #555;
                 color: white;
                 position:fixed;
-                bottom:0;
-                left:0;
+                bottom: 0px;
+                left: 0px;
+
             }
 
             .cardLink,
             .cardLink:hover{
                 color: inherit;
                 text-decoration: none;
+                cursor: pointer;
 
             }
+
+
+
+
+            /* The snackbar - position it at the bottom and in the middle of the screen */
+            #snackbar {
+                visibility: hidden; /* Hidden by default. Visible on click */
+                min-width: 250px; /* Set a default minimum width */
+                margin-left: -125px; /* Divide value of min-width by 2 */
+                background-color: grey; /* Black background color */
+                color: #fff; /* White text color */
+                text-align: center; /* Centered text */
+                border-radius: 2px; /* Rounded borders */
+                padding: 16px; /* Padding */
+                position: fixed; /* Sit on top of the screen */
+                z-index: 1; /* Add a z-index if needed */
+                left: 90%; /* Center the snackbar */
+                bottom: 50px; /* 30px from the bottom */
+            }
+
+            /* Show the snackbar when clicking on a button (class added with JavaScript) */
+            #snackbar.show {
+                visibility: visible; /* Show the snackbar */
+                /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+                However, delay the fade out process for 2.5 seconds */
+                -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+                animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            }
+
+            /* Animations to fade the snackbar in and out */
+            @-webkit-keyframes fadein {
+                from {bottom: 0; opacity: 0;}
+                to {bottom: 30px; opacity: 1;}
+            }
+
+            @keyframes fadein {
+                from {bottom: 0; opacity: 0;}
+                to {bottom: 30px; opacity: 1;}
+            }
+
+            @-webkit-keyframes fadeout {
+                from {bottom: 30px; opacity: 1;}
+                to {bottom: 0; opacity: 0;}
+            }
+
+            @keyframes fadeout {
+                from {bottom: 30px; opacity: 1;}
+                to {bottom: 0; opacity: 0;}
+            } 
 
 
 
@@ -126,7 +176,16 @@
             System.out.println("received teacher :" + currentTeacherData.toString());
         }
 
+        String saveStatus = (String) session.getAttribute("save_status");
+
+        if (saveStatus.equals("1")) {
+            System.out.println("save signal received : student details.");
+        } else {
+            System.out.println("no save signal received : student details.");
+        }
     %>
+
+
 
 
 
@@ -278,8 +337,8 @@
         <!--        Page content-->
         <div class="page-content" >
 
-
-
+            <!-- The actual snackbar -->
+            <div id="snackbar">Saved Successfully!</div> 
 
 
             <%if (request.getParameter("grade") == null && request.getParameter("class") == null) {%>
@@ -522,7 +581,7 @@
             <div class="classesGrid">
                 <div class="gradeTitle col-md-9" style="margin:auto; margin-top: 2%; margin-bottom: 1%;">
 
-                    <span class="badge badge-info" style="font-size: 1.7vw;"><%="Grade " + grade%></span>
+                    <span class="badge badge-pill badge-info" style="font-size: 1.7vw;"><%="Grade " + grade%></span>
 
                     <button type="button" class="btn btn-warning" style="float: right; color: white;"  data-toggle="modal" data-target="#addClassModal">Add a Class</button>
 
@@ -584,6 +643,19 @@
 
                     for (ClassModel c : recClasses) {
 
+                        String classTeacherName = "Not Found";
+
+                        TeacherModel recData = getClassTeacher(c.getId());
+
+                        if (recData.getFirstName() != null) {
+                            if (recData.getGender().equals("M")) {
+                                classTeacherName = "Mr. " + recData.getFirstName() + " " + recData.getLastName();
+                            } else {
+                                classTeacherName = "Mrs. " + recData.getFirstName() + " " + recData.getLastName();
+                            }
+
+                        }
+
 
                 %>
 
@@ -591,12 +663,17 @@
                     <a href="studentDetails.jsp?grade=<%=grade%>&class=<%=c.getId()%>&name=<%=c.getName()%>" class="cardLink">
                         <div class="row">
                             <div class="numberHolder col-md-3" style="display: flex; background-color: green; color: white; text-align: center; padding: 1%;">
-                                <p class="gradeNumber" style="font-size: 1.7vw; margin: auto;"><strong><%=c.getGrade()%></strong></p>
+                                <p class="gradeNumber" style="font-size: 1.7vw; margin: auto;"><strong><%=c.getName()%></strong></p>
                             </div>
 
-                            <div class="numberHolder col-md-9" style="  display: flex; text-align: center;">
-                                <p class="gradeText" style="font-size: 1.7vw; margin: auto; "><%=c.getName()%><p>
+                            <div class="numberHolder col-md-9 row" style="display: flex; padding-left: 3%;">
+
+                                <p class="teacherName" style="font-size: 1.6vw; margin-right: auto; margin-top: auto;  margin-bottom: auto;"><%=classTeacherName%><p>
+
+                                <p class="gradeText" style="font-size: 1.7vw; margin-left: auto;margin-top: auto; margin-bottom: auto; "><span class="badge badge-pill badge-dark"><%="67"%></span><p>
                             </div>
+
+
 
                         </div>
                     </a>
@@ -619,14 +696,14 @@
             %>
 
             <div class="studentsDetailsGrid">
-                <div class="classTitle col-md-9" style="margin:auto; margin-top: 2%; margin-bottom: 1%;">
+                <div class="classTitle col-md-7" style="margin-left:5%; margin-top: 2%; margin-bottom: 1%;">
 
                     <span class="badge badge-info" style="font-size: 2vw;"><%=grade + " - " + studentClassName%></span>
                     <button type="button" class="btn btn-warning" style="float: right; color: white;" data-toggle="modal" data-target="#addStudentModal">Add a student</button>
 
                 </div>
 
-                <div class="modal fade" id="addStudentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal fade" id="addStudentModal" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
                             <div class="modal-header bg-dark" >
@@ -647,34 +724,58 @@
 
                                             <div class="col-md-6">
                                                 <label for="className">Class Name</label>
-                                                <input class="form-control" id="className" disabled value="<%=studentClassName%>">
+                                                <input class="form-control" id="className" disabled value="<%=studentClassName%>" required>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="form-group row">
+                                        <div class="col-md-12">
+                                            <label for="admissionNumberText">Admission Number</label>
+                                            <input class="form-control" id="admissionNumber" type="number" name="admissionNumber" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
                                         <div class="col-md-12">
                                             <label for="firstNameText">First Name</label>
-                                            <input class="form-control" id="firstNameText" name="firstName">
+                                            <input class="form-control" id="firstNameText" name="firstName" required>
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
+                                    <div class="form-group row">
                                         <div class="col-md-12">
                                             <label for="lastNameText">Last Name</label>
-                                            <input class="form-control" id="lastNameText" name="lastName">
+                                            <input class="form-control" id="lastNameText" name="lastName" required>
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
+
+
+                                    <div class="form-group row">
                                         <div class="col-md-12">
                                             <label for="addressText">Address</label>
-                                            <input class="form-control" id="addressText" name="address">
+                                            <input class="form-control" id="addressText" name="address" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row"> <!-- Date input -->
+
+                                        <div class=" holder col-md-6">
+                                            <label class="control-label" for="date">Birthday</label>
+                                            <input class="form-control" type="date"  name="bDate" placeholder="yyyy-MM-dd" type="text" required/>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="control-label" for="date">Enrolled date</label>
+                                            <input class="form-control" type="date"  name="eDate" placeholder="yyyy-MM-dd" type="text" required/>
                                         </div>
                                     </div>
 
                                     <input type="hidden" name="action" value="addAStudent">
+                                    <input type="hidden" name="classGrade" value="<%=grade%>">
                                     <input type="hidden" name="classId" value="<%=studentClass%>">
+                                    <input type="hidden" name="className" value="<%=studentClassName%>">
 
                                     <div class=" col-md-12" style="padding-right: 8%; padding-top: 4%;">
                                         <div class="row" style="float: right;">
@@ -697,34 +798,233 @@
 
                 </div>
 
+                <div class="row">
+                    <div class="studentsHolder col-md-7">
+                        <%
+                            List<StudentModel> recStudents = getAllStudentsOfAClass(Integer.parseInt(studentClass));
+                            System.out.println("rec amount students : " + recStudents.size());
+
+                            for (StudentModel s : recStudents) {
 
 
-                <%
-                    List<StudentModel> recStudents = getAllStudentsOfAClass(Integer.parseInt(studentClass));
-                    System.out.println("rec amount students : " + recStudents.size());
+                        %>
 
-                    for (StudentModel s : recStudents) {
+                        <div class="card col-md-12" style="margin-top: 0.5%; margin-bottom: 0.5%; margin-left: 5%;">
+                            <a class="cardLink" data-toggle="modal" data-target="#viewStudentModal_<%=s.getAdmissionNumber()%>"> 
+                                <div class="row">
+                                    <div class="numberHolder col-md-3" style="display: flex; background-color: green; color: white; text-align: center;">
+                                        <p class="gradeNumber" style="font-size: 1.4vw; margin: auto;"><strong><%=s.getAdmissionNumber()%></strong></p>
+                                    </div>
+
+                                    <div class="numberHolder col-md-9" style="  display: flex;">
+                                        <p class="gradeText" style="font-size: 1.4vw; margin-top: auto; margin-bottom: auto;"><%=s.getFirstName() + " " + s.getLastName()%><p>
+                                    </div>
+
+                                </div>
+                            </a>
+
+                        </div>
 
 
-                %>
+                        <div class="modal fade" id="viewStudentModal_<%=s.getAdmissionNumber()%>" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-dark" >
+                                        <h5 class="modal-title" id="exampleModalLongTitle" style="color: white;">Student Details</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
 
-                <div class="card col-md-9" style="margin-top: 0.5%; margin-bottom: 0.5%; margin-left: auto; margin-right: auto;">
-                    <a class="cardLink">
-                        <div class="row">
-                            <div class="numberHolder col-md-3" style="display: flex; background-color: green; color: white; text-align: center;">
-                                <p class="gradeNumber" style="font-size: 1.4vw; margin: auto;"><strong><%=s.getAdmissionNumber()%></strong></p>
-                            </div>
+                                        <form>
+                                            <div class="form-group">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <label for="gradeText">Grade </label>
+                                                        <input class="form-control" id="gradeText" disabled value="<%=grade%>">
+                                                    </div>
 
-                            <div class="numberHolder col-md-9" style="  display: flex;">
-                                <p class="gradeText" style="font-size: 1.4vw; margin-top: auto; margin-bottom: auto;"><%=s.getFirstName() + " " + s.getLastName()%><p>
+                                                    <div class="col-md-6">
+                                                        <label for="className">Class Name</label>
+                                                        <input class="form-control" id="className" disabled value="<%=studentClassName%>">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group row">
+                                                <div class="col-md-12">
+                                                    <label for="admissionNumberText">Admission Number</label>
+                                                    <input class="form-control" id="admissionNumber" type="number" value="<%=s.getAdmissionNumber()%>" disabled>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group row">
+                                                <div class="col-md-12">
+                                                    <label for="firstNameText">First Name</label>
+                                                    <input class="form-control" id="firstNameText" value="<%=s.getFirstName()%>" disabled>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group row">
+                                                <div class="col-md-12">
+                                                    <label for="lastNameText">Last Name</label>
+                                                    <input class="form-control" id="lastNameText" value="<%=s.getLastName()%>" disabled>
+                                                </div>
+                                            </div>
+
+
+
+                                            <div class="form-group row">
+                                                <div class="col-md-12">
+                                                    <label for="addressText">Address</label>
+                                                    <input class="form-control" id="addressText" value="<%=s.getAddress()%>" disabled>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group row"> <!-- Date input -->
+
+                                                <div class=" holder col-md-6">
+                                                    <label class="control-label" for="date">Birthday</label>
+                                                    <input class="form-control" type="date" value="<%=s.getBday()%>" disabled/>
+                                                </div>
+
+                                                <div class="col-md-6">
+                                                    <label class="control-label" for="date">Enrolled date</label>
+                                                    <input class="form-control" type="date"  value="<%=s.getEnrolledDate()%>" disabled/>
+                                                </div>
+                                            </div>
+
+
+                                            <div class=" col-md-12" style=" padding-top: 2%;">
+                                                <div class="row" style="float: right;">
+                                                    <button type="button" class="btn bg-teal-300" style="background-color: blueviolet; color: white;" data-dismiss="modal">Close</button>
+                                                </div>
+
+                                            </div>
+
+                                        </form>
+
+
+                                    </div>
+
+
+                                </div>
+
+
                             </div>
 
                         </div>
-                    </a>
+
+
+
+                        <%}%>
+
+                    </div>
+
+                    <%
+                        TeacherModel currentClassTeacher = getClassTeacher(Integer.parseInt(request.getParameter("class")));
+
+
+                    %>
+
+                    <div class="teacherHolder col-md-5" >
+                        <div class="card  col-md-9" style="margin: auto;">
+                            <div class="form-group row" style="margin-top: 5%;">
+                                <div class="col-md-12">
+                                    <h4 for="nicText"><strong>Class Teacher Details</strong></h4>
+                                </div>
+                            </div>
+
+                            <% if (currentClassTeacher.getNic() != null) {%>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label for="nicText">NIC</label>
+                                    <input class="form-control" id="nicText" value="<%=currentClassTeacher.getNic()%>" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label for="firstNameText">First Name</label>
+                                    <input class="form-control" id="firstNameText" value="<%=currentClassTeacher.getFirstName()%>" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label for="lastNameText">Last Name</label>
+                                    <input class="form-control" id="lastNameText" value="<%=currentClassTeacher.getLastName()%>" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label for="addressText">Address</label>
+                                    <input class="form-control" id="addressText" value="<%=currentClassTeacher.getAddress()%>" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label for="telText">Telephone Number</label>
+                                    <input class="form-control" id="telText" value="<%=currentClassTeacher.getTelephoneNumber()%>" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <label for="statusText">Status</label>
+                                    <input class="form-control" id="statusText" value="<%=currentClassTeacher.getStatus()%>" disabled>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="statusText">Gender</label>
+                                    <input class="form-control" id="statusText" value="<%=currentClassTeacher.getGender()%>" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <button type="button" class="btn bg-teal-300" style="background-color: blueviolet; color: white; margin: auto;">Update class teacher</button>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <%} else {%>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <p>Class Teacher Not Found.</p>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <button type="button" class="btn bg-teal-300" style="background-color: blueviolet; color: white; margin: auto;">Configure class teacher</button>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <%}%>
+
+
+
+
+                        </div>
+
+
+                    </div>
 
                 </div>
 
-                <%}%>
+
 
 
 
@@ -749,6 +1049,22 @@
 
         <script>
 
+            var session_obj = '<%=saveStatus%>';
+            console.log("status : " + session_obj);
+
+            if (session_obj === "1") {
+
+                var x = document.getElementById("snackbar");
+                x.className = "show";
+
+                setTimeout(function () {
+                    x.className = x.className.replace("show", "");
+                }, 3000);
+
+                //change the session attribute
+
+            }
+
             /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
             function myFunction() {
                 console.log("method started.");
@@ -759,6 +1075,8 @@
                     x.className = "topnav";
                 }
             }
+
+
 
 
 

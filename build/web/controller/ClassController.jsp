@@ -4,6 +4,11 @@
     Author     : User
 --%>
 
+<%@page import="lk.studentsmanage.models.TeacherModel"%>
+<%@page import="java.text.ParseException"%>
+<%@page import="java.util.Date"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.text.DateFormat"%>
 <%@page import="lk.studentsmanage.services.ClassAPI"%>
 <%@page import="lk.studentsmanage.models.ClassModel"%>
 <%@page import="java.util.ArrayList"%>
@@ -21,56 +26,84 @@
 
 
 <%
-    
+
     String actionClass = "" + request.getParameter("action");
- 
+    String classGrade = "" + request.getParameter("classGrade");
+    String classId = "" + request.getParameter("classId");
+    String className = "" + request.getParameter("className");
 
     if (actionClass.equals("addAClass")) {
-        String grade = request.getParameter("classGrade");
-        String name = request.getParameter("className");
-        
+
         ClassModel tempClass = new ClassModel();
-        
-        tempClass.setGrade(Integer.parseInt(grade));
-        tempClass.setName(name);
-        
+
+        tempClass.setGrade(Integer.parseInt(classGrade));
+        tempClass.setName(className);
+
         ClassAPI classAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(ClassAPI.class);
-        
+
         Call<Boolean> save = classAPI.saveAClass(tempClass);
 
         Boolean ss = save.execute().body();
 
         if (ss) {
-            response.sendRedirect("./studentDetails.jsp?grade="+grade+"&status=saved");
+            session.setAttribute("save_status", "1");
+
+            response.sendRedirect("./studentDetails.jsp?grade=" + classGrade);
+
         } else {
-            response.sendRedirect("./studentDetails.jsp?grade="+grade+"&status=notSaved");
+            session.setAttribute("save_status", "0");
+            response.sendRedirect("./studentDetails.jsp?grade=" + classGrade);
         }
-    
-    }else if(actionClass.equals("addAStudent")){
-        
-        String classId = request.getParameter("classId");
+
+    } else if (actionClass.equals("addAStudent")) {
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Date birthDate = null;
+        Date enrolledDate = null;
+
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
-        
+        String address = request.getParameter("address");
+        String birthday = request.getParameter("bDate");
+        String enrolledDateRec = request.getParameter("eDate");
+        String admissionNumber = request.getParameter("admissionNumber");
+
+        System.out.println(" b : " + birthday + "  e: " + enrolledDateRec);
+
         StudentModel tempStudent = new StudentModel();
-        
+
+        tempStudent.setAdmissionNumber(Long.parseLong(admissionNumber));
         tempStudent.setFirstName(firstName);
         tempStudent.setLastName(lastName);
-        
-        tempStudent.setCurrentClassId(Integer.parseInt(classId));
-        
-        ClassAPI classAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(ClassAPI.class);
-        
-        Call<Boolean> save = classAPI.AddAStudent(tempStudent);
+        tempStudent.setAddress(address);
 
+        String upBdate = "";
+
+        try {
+            birthDate = df.parse(birthday);
+            enrolledDate = df.parse(enrolledDateRec);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        tempStudent.setBday(birthday);
+        tempStudent.setEnrolledDate(enrolledDateRec);
+        tempStudent.setCurrentClassId(Integer.parseInt(classId));
+
+        System.out.println("object : " + tempStudent.toString());
+
+        ClassAPI classAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(ClassAPI.class);
+        Call<Boolean> save = classAPI.AddAStudent(tempStudent);
         Boolean ss = save.execute().body();
 
         if (ss) {
-            response.sendRedirect("./studentDetails.jsp?grade=&status=saved");
+            response.sendRedirect("./studentDetails.jsp?grade=" + classGrade + "&class=" + classId + "&name=" + className + "&status=saved");
+
         } else {
-            response.sendRedirect("./studentDetails.jsp?grade=&status=notSaved");
+            response.sendRedirect("./studentDetails.jsp?grade=" + classGrade + "&class=" + classId + "&name=" + className + "&status=notSaved");
         }
-    
+
     }
 
 %>
@@ -114,7 +147,23 @@
 
     }
 
- 
+    public TeacherModel getClassTeacher(int classId) {
+
+        ClassAPI teacherAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(ClassAPI.class);
+
+        Call<TeacherModel> teacherDataCall = teacherAPI.getClassTeacher(classId);
+
+        TeacherModel recTeacherData = new TeacherModel();
+
+        try {
+            recTeacherData = teacherDataCall.execute().body();
+            System.out.println("received teacher data : " + recTeacherData.toString());
+        } catch (Exception e) {
+            System.out.println("Exception in class Controller : " + e);
+        }
+
+        return recTeacherData;
+    }
 
 
 %>
