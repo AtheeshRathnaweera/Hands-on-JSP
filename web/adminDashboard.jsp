@@ -360,7 +360,7 @@
                     <h3>Students section</h3>
                     <div class="row">
                         <div class="col-md-8">
-                            <input type="text" id="studentSearchInput" onkeyup="searchFunction({inputId: 'studentSearchInput', table: 'studentTable'})" placeholder="Search for users..">
+                            <input style="background-image: url('assets/images/searchIcon.png');" type="text" id="studentSearchInput" onkeyup="searchFunction({inputId: 'studentSearchInput', table: 'studentTable'})" placeholder="Search for users..">
                             <div style="height: 77%; overflow-y: auto">
                                 <table id="studentTable">
                                     <tr class="header">
@@ -404,7 +404,7 @@
                     <h3>Teachers section</h3>
                     <div class="row">
                         <div class="col-md-8">
-                            <input type="text" id="teacherSearchInput" onkeyup="searchFunction({inputId: 'teacherSearchInput', table: 'teacherTable'})" placeholder="Search for users..">
+                            <input style="background-image: url('assets/images/searchIcon.png');" type="text" id="teacherSearchInput" onkeyup="searchFunction({inputId: 'teacherSearchInput', table: 'teacherTable'})" placeholder="Search for users..">
                             <div style="height: 77%; overflow-y: auto">
                                 <table id="teacherTable">
                                     <tr class="header">
@@ -448,7 +448,7 @@
                     <h3>Operators section</h3>
                     <div class="row">
                         <div class="col-md-8">
-                            <input type="text" id="operatorSearchInput" onkeyup="searchFunction({inputId: 'operatorSearchInput', table: 'operatorTable'})" placeholder="Search for users..">
+                            <input style="background-image: url('assets/images/searchIcon.png');" type="text" id="operatorSearchInput" onkeyup="searchFunction({inputId: 'operatorSearchInput', table: 'operatorTable'})" placeholder="Search for users..">
                             <div style="height: 77%; overflow-y: auto">
                                 <table id="operatorTable">
                                     <tr class="header">
