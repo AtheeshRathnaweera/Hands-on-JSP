@@ -1,3 +1,4 @@
+<%@page import="lk.studentsmanage.models.UserModel"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="lk.studentsmanage.models.StudentModel"%>
 <%@include file="controller/StudentController.jsp" %>
@@ -67,26 +68,32 @@
     </head>
 
     <%
-        String role = (String) "" + session.getAttribute("userRole");
-        String userId = (String) "" + session.getAttribute("userId");
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MMM-dd");
+        UserModel userData= (UserModel) session.getAttribute("userData");
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat typeDate = new SimpleDateFormat("yyyy-MM-dd");
+        
+        String role = "";
+        String userId = "";
 
-        if (role.equals("null") && role.equals("null")) {
+        if (userData == null) {
             System.out.println("Home page : role or userId is null ");
             response.sendRedirect("index.jsp");
             return;
         } else {
             System.out.println("Home page : role or userId found");
+            role = userData.getUserRole();
+            userId = userData.getUserId();
         }
 
         StudentModel currentStudentData = null;
         TeacherModel currentTeacherData = null;
+        
 
         if (role.equals("student")) {
             currentStudentData = getStudentDetails(userId);
             System.out.println("received student : " + currentStudentData.toString());
 
-        } else {
+        } else if(role.equals("teacher")){
             currentTeacherData = getTeacherDetails(userId);
             System.out.println("received teacher :" + currentTeacherData.toString());
         }
@@ -165,7 +172,7 @@
 
                                 <div class="enrolledDateClass col-md-6">
                                     <label for="studentEnrolledDate">Enrolled Date</label>
-                                    <input class="form-control" id="studentEnrolledDate" disabled value="<%=dateFormatter.format(currentStudentData.getEnrolledDate())%>">
+                                    <input class="form-control" id="studentEnrolledDate" disabled value="<%=dateFormatter.format(dateFormatter.parse(currentStudentData.getEnrolledDate()))%>">
                                 </div>
                             </div>
 
@@ -182,7 +189,7 @@
                             <div class="form-group row">
                                 <div class="bdayClass col-md-6">
                                     <label for="studentBirthday">Birthday</label>
-                                    <input class="form-control" id="studentBirthday" disabled value="<%=dateFormatter.format(currentStudentData.getBday())%>">
+                                    <input class="form-control" id="studentBirthday" disabled value="<%=dateFormatter.format(dateFormatter.parse(currentStudentData.getBday()))%>">
                                 </div>
                             </div>
 

@@ -46,16 +46,18 @@
         System.out.println("students login res : " + u.toString());
 
         if (u != null) {
-            if (u.getUserRole() != null) {
-                session.setAttribute("userId", u.getUserId());
-                session.setAttribute("userRole", u.getUserRole());
-                session.setAttribute("save_status","0");
+            session.setAttribute("userData", u);
+            session.setAttribute("save_status", "0");
+            
+            if (u.getUserRole().equals("admin")) {
+                response.sendRedirect("../adminDashboard.jsp");
+            }else if(u.getUserRole().equals("teacher") || u.getUserRole().equals("student")){
                 response.sendRedirect("../homePage.jsp");
-
-            } else {
-                System.out.println("Log in failed.");
+            }else{
+                System.out.println("use role is null. Login failed.");
                 response.sendRedirect("../index.jsp?err=upinc");
             }
+           
         } else {
             System.out.println("Login failed.");
             response.sendRedirect("../index.jsp?err=upinc");
@@ -77,7 +79,7 @@
         System.out.println(user.toString());
 
         LoginAPI signinApi = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(LoginAPI.class);
-        
+
         Call<UserModel> signin = null;
 
         if (role.equals("student")) {
@@ -95,14 +97,15 @@
         u = res.body();
 
         if (u != null) {
-            if (u.getUserRole() != null) {
-                session.setAttribute("userId", u.getUserId());
-                session.setAttribute("userRole", u.getUserRole());
-                session.setAttribute("save_status","0");
+            session.setAttribute("userData", u);
+            session.setAttribute("save_status", "0");
+            
+            if (u.getUserRole().equals("admin")) {
+                response.sendRedirect("../adminDashboard.jsp");
+            }else if(u.getUserRole().equals("teacher") || u.getUserRole().equals("student")){
                 response.sendRedirect("../homePage.jsp");
-
-            } else {
-                System.out.println("Signin in failed.");
+            }else{
+                System.out.println("use role is null. Login failed.");
                 response.sendRedirect("../index.jsp?err=upinc");
             }
         } else {

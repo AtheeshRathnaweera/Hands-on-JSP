@@ -1,3 +1,4 @@
+<%@page import="lk.studentsmanage.models.UserModel"%>
 <!DOCTYPE html>
 <!--
 To change this license header, choose License Headers in Project Properties.
@@ -30,7 +31,7 @@ and open the template in the editor.
 
                 <div class="container">
                     <div class="labelHolder">
-                        <label for="userName"><b>Username</b></label>
+                        <label for="userName"><b>User ID</b></label>
                     </div>
                     <input type="text" placeholder="Enter Username" name="userName" required>
 
@@ -71,10 +72,9 @@ and open the template in the editor.
         }
     }
 
-    String role = (String) ""+session.getAttribute("userRole");
-    String userId = (String) ""+session.getAttribute("UserId");
+    UserModel userData = (UserModel) session.getAttribute("userData");
 
-    if (!role.equals("null") && !userId.equals("null")) {
+    if (userData != null) {
         System.out.println("index : role and userid is not null");
         response.sendRedirect("homePage.jsp");
         return;

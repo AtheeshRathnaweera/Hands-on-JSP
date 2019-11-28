@@ -63,6 +63,7 @@ and open the template in the editor.
                     </div>
                     <input type="radio" name="role" value="student" checked> Student
                     <input type="radio" name="role" value="teacher" > Teacher
+                    <input type="radio" name="role" value="teacher" > Operator
 
 
                     <input type="hidden" name="action" value="signin">
