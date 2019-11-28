@@ -122,6 +122,8 @@
         List<OperatorModel> operators = getAllOperators();
         int operatorsCount = operators.size();
 
+        System.out.println("userdata : " + userData.toString());
+
     %>
 
 
@@ -135,47 +137,71 @@
 
 
             $(document).ready(function () {
-            <%if (status.equals("savedOp")) {%>
-                jQuery(function () {
-                    jQuery('#operator-settings').click();
-                });
-                window.history.replaceState(null, null, window.location.pathname);
-            <%} else {%>
-                $("#student-settings").css("background-color", "lightgrey");
-            <%}%>
-
-                $('#student-settings').click(function () {
-
+                <%if (status.equals("savedOp")) {%>
+                    jQuery(function () {
+                        jQuery('#operator-settings').click();
+                    });
+                    window.history.replaceState(null, null, window.location.pathname);
+                <%} else {%>
                     $("#student-settings").css("background-color", "lightgrey");
-                    $("#operator-settings").css("background-color", "white");
-                    $("#teacher-settings").css("background-color", "white");
+                <%}%>
 
-                    $("#student-section").css("display", "block");
-                    $("#teacher-section").css("display", "none");
-                    $("#operator-section").css("display", "none");
-                });
+                    $("#pw_reset_section").css("display", "none"); //hide the password reset section
+                    $("#updateAdminProfileButton").css("visibility", "hidden");
+                    document.getElementById("adminProfileUpdateForm").reset();
 
-                $('#teacher-settings').click(function () {
+                    $('#student-settings').click(function () {
 
-                    $("#teacher-settings").css("background-color", "lightgrey");
-                    $("#student-settings").css("background-color", "white");
-                    $("#operator-settings").css("background-color", "white");
+                        $("#student-settings").css("background-color", "lightgrey");
+                        $("#operator-settings").css("background-color", "white");
+                        $("#teacher-settings").css("background-color", "white");
 
-                    $("#teacher-section").css("display", "block");
-                    $("#operator-section").css("display", "none");
-                    $("#student-section").css("display", "none");
-                });
+                        $("#student-section").css("display", "block");
+                        $("#teacher-section").css("display", "none");
+                        $("#operator-section").css("display", "none");
+                    });
 
-                $('#operator-settings').click(function () {
+                    $('#teacher-settings').click(function () {
 
-                    $("#teacher-settings").css("background-color", "white");
-                    $("#student-settings").css("background-color", "white");
-                    $("#operator-settings").css("background-color", "lightgrey");
+                        $("#teacher-settings").css("background-color", "lightgrey");
+                        $("#student-settings").css("background-color", "white");
+                        $("#operator-settings").css("background-color", "white");
 
-                    $("#teacher-section").css("display", "none");
-                    $("#student-section").css("display", "none");
-                    $("#operator-section").css("display", "block");
-                });
+                        $("#teacher-section").css("display", "block");
+                        $("#operator-section").css("display", "none");
+                        $("#student-section").css("display", "none");
+                    });
+
+                    $('#operator-settings').click(function () {
+
+                        $("#teacher-settings").css("background-color", "white");
+                        $("#student-settings").css("background-color", "white");
+                        $("#operator-settings").css("background-color", "lightgrey");
+
+                        $("#teacher-section").css("display", "none");
+                        $("#student-section").css("display", "none");
+                        $("#operator-section").css("display", "block");
+                    });
+
+
+                    $('#adminCurrentPassword').on('keyup', function () { //validate the passwords when password resetting
+                        if ($('#adminCurrentPassword').val() === "<%=userData.getPassword()%>") {
+                            $("#pw_reset_section").css("display", "block");
+
+                            $('#adminNewRepeatPassword').on('keyup', function () {
+                                if ( $('#adminNewPassword').val() !== "" && $('#adminNewRepeatPassword').val() !== "" && ( $('#adminNewPassword').val() === $('#adminNewRepeatPassword').val() )) {
+                                    $("#updateAdminProfileButton").css("visibility", "visible");
+                                } else {
+                                    $("#updateAdminProfileButton").css("visibility", "hidden");
+                                }
+                            });
+
+                        } else {
+                            $("#pw_reset_section").css("display", "none");
+                        }
+
+
+                    });
             });
 
         </script>
@@ -225,25 +251,46 @@
                         </button>
                     </div>
                     <div class="modal-body">
-
-                        <!--                        Student user details -->
-                        <form>
+                        <form id="adminProfileUpdateForm" action="controller/AdminController.jsp">
                             <div class="form-group">
-                                <label for="adminUserName">Name</label>
-                                <input class="form-control" id="adminUserName" disabled value="<%=userData.getUserId()%>">
+                                <label >Name</label>
+                                <input class="form-control" disabled value="<%=userData.getUserId()%>">
                             </div>
 
                             <div class="form-group">
-                                <label for="studentFirstName">Role</label>
-                                <input class="form-control" id="studentFirstName" disabled value="<%=userData.getUserRole()%>">
+                                <label >Role</label>
+                                <input class="form-control" disabled value="<%=userData.getUserRole()%>">
+                            </div>
+
+                            <label>Password reset</label>
+
+                            <div class="form-group">
+                                <input class="form-control" id="adminCurrentPassword" type="password" required placeholder="current password">
+                            </div>
+
+                            <div id="pw_reset_section">
+                                <div class="form-group">
+                                    <input class="form-control" id="adminNewPassword" type="password" required placeholder="new password">
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" id="adminNewRepeatPassword" type="password" name="newPassword" required placeholder="repeat password">
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="action" value="updateAdmin">
+                            <input type="hidden" name="updateName" value="<%=userData.getUserId()%>">
+                            <input type="hidden" name="updateRole" value="<%=userData.getUserRole()%>">
+
+                            <div style="margin-top:4%; " class="form-group">
+                                <div class="row mr-1" style="float: right;">
+                                    <button id="updateAdminProfileButton" type="submit" class="btn btn-warning mr-2" style="color: white;">Update Profile</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
                             </div>
 
                         </form>
-                        <!--                        Student user details -->
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    </div>
+
                 </div>
             </div>
         </div>
@@ -463,7 +510,7 @@
                                     <tr style="cursor: pointer;" onclick="operatorFunc({nic: '<%=us.getNic()%>', name: '<%=us.getFirstName() + " " + us.getLastName()%>', address: '<%=us.getAddress()%>', birthday: '<%=us.getBday()%>', enrolledDate: '<%=us.getEnrolledDate()%>', status: '<%=us.getStatus()%>'})">
                                         <td><%=us.getNic()%></td>
                                         <td><%=us.getFirstName() + " " + us.getLastName()%></td>
-                                        <td style="<% if(us.getStatus().equals("active")){%> color:green; <%}else if(us.getStatus().equals("blocked")){%> color:red; <%}else{%>color:lightblue;<%}%>"><%=us.getStatus()%></td>
+                                        <td style="<% if (us.getStatus().equals("active")) {%> color:green; <%} else if (us.getStatus().equals("blocked")) {%> color:red; <%} else {%>color:lightblue;<%}%>"><%=us.getStatus()%></td>
                                     </tr>                              
                                     <%}%>                       
                                 </table> 

@@ -74,8 +74,6 @@
         Call<Boolean> save = adminOpAPI.updateStatus(nic, newStatus);
 
         Boolean ss = save.execute().body();
-        
-        System.out.println("recccccccccc: status : "+newStatus+" nicc: "+nic);
 
         if (ss) {
             session.setAttribute("save_status", "1");
@@ -85,6 +83,27 @@
             session.setAttribute("save_status", "0");
             response.sendRedirect("../adminDashboard.jsp?status=savedOp");
         }
+    }else if(actionClass.equals("updateAdmin")){
+        
+        String name = "" + request.getParameter("updateName");
+        String role = "" +request.getParameter("updateRole");
+        String newPassword = ""+request.getParameter("newPassword");
+        
+        UserModel tempUser = new UserModel(name,newPassword,role);
+        
+        AdminAPI adminAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(AdminAPI.class);
+
+        Call<Boolean> save = adminAPI.resetAdminPassword(tempUser);
+
+        Boolean ss = save.execute().body();
+
+        if (ss) {
+            response.sendRedirect("../index.jsp?status=logout");
+
+        } else {
+            response.sendRedirect("../adminDashboard.jsp?status=failed");
+        }
+    
     }
 
 %>
