@@ -21,17 +21,26 @@ import retrofit2.http.Path;
  * @author User
  */
 public interface ClassAPI {
+    
+    @GET("class/allCount")
+    Call<Long> getAllCount();
+    
+    @GET("class/getClassAmount/{grade}")
+    Call<Long> getClassAmountOfAGrade(@Path("grade") int grade);
+    
+    @GET("class/getStudentsCount/{classId}}")
+    Call<Long> getStudentAmountOfAClass(@Path("classId") int classId);
 
-    @GET("classes/getClasses/{grade}")
+    @GET("class/getClasses/{grade}")
     Call<List<ClassModel>> getAllClassesByGrade(@Path("grade") int grade);
 
     @GET("classes/getStudents/{classId}")
     Call<List<StudentModel>> getAllStudentsByClass(@Path("classId") int classId);
 
-    @GET("classes/getTeacher/{classId}")
-    Call<TeacherModel> getClassTeacher(@Path("classId") int classId);
+    @GET("class/getTeacher/{classId}")
+    Call<List<TeacherModel>> getClassTeacher(@Path("classId") int classId);
 
-    @POST("addClass")
+    @POST("class/add")
     Call<Boolean> saveAClass(@Body ClassModel classdto);
 
     @POST("addStudent")

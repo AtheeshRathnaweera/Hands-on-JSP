@@ -75,7 +75,7 @@
         String role = "";
         String userId = "";
 
-        if (userData == null) {
+        if (userData.getUserRole() == null) {
             System.out.println("Home page : role or userId is null ");
             response.sendRedirect("index.jsp");
             return;
@@ -86,8 +86,7 @@
         }
 
         StudentModel currentStudentData = null;
-        TeacherModel currentTeacherData = null;
-        
+        TeacherModel currentTeacherData = null;    
 
         if (role.equals("student")) {
             currentStudentData = getStudentDetails(userId);
@@ -98,8 +97,8 @@
             System.out.println("received teacher :" + currentTeacherData.toString());
         }
 
-        Long studentCount = getStudentUsersCount();
-        Long teachersCount = getTeacherUsersCount();
+        Long studentCount = getStudentsCount();
+        Long teachersCount = getTeachersCount();
 
     %>
 

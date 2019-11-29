@@ -21,5 +21,8 @@ public interface LoginAPI {
     
     @POST("signin/teacher")
     Call<UserModel> signInTeacher(@Body UserModel tSign);
+    
+    @POST("signin/operator")
+    Call<UserModel> signInOperator(@Body UserModel pSign);
 
 }

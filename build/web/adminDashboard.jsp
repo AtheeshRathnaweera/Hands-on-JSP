@@ -12,7 +12,6 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <!--        Bootstrap needs-->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -107,7 +106,7 @@
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MMM-dd");
         String status = "" + request.getParameter("status");
 
-        if (userData == null) {
+        if (userData == null || !userData.getUserRole().equals("admin")) {
             System.out.println("Home page : role or userId is null ");
             response.sendRedirect("index.jsp");
             return;
@@ -137,71 +136,71 @@
 
 
             $(document).ready(function () {
-                <%if (status.equals("savedOp")) {%>
-                    jQuery(function () {
-                        jQuery('#operator-settings').click();
-                    });
-                    window.history.replaceState(null, null, window.location.pathname);
-                <%} else {%>
+            <%if (status.equals("savedOp")) {%>
+                jQuery(function () {
+                    jQuery('#operator-settings').click();
+                });
+                window.history.replaceState(null, null, window.location.pathname);
+            <%} else {%>
+                $("#student-settings").css("background-color", "lightgrey");
+            <%}%>
+
+                $("#pw_reset_section").css("display", "none"); //hide the password reset section
+                $("#updateAdminProfileButton").css("visibility", "hidden");
+                document.getElementById("adminProfileUpdateForm").reset();
+
+                $('#student-settings').click(function () {
+
                     $("#student-settings").css("background-color", "lightgrey");
-                <%}%>
+                    $("#operator-settings").css("background-color", "white");
+                    $("#teacher-settings").css("background-color", "white");
 
-                    $("#pw_reset_section").css("display", "none"); //hide the password reset section
-                    $("#updateAdminProfileButton").css("visibility", "hidden");
-                    document.getElementById("adminProfileUpdateForm").reset();
+                    $("#student-section").css("display", "block");
+                    $("#teacher-section").css("display", "none");
+                    $("#operator-section").css("display", "none");
+                });
 
-                    $('#student-settings').click(function () {
+                $('#teacher-settings').click(function () {
 
-                        $("#student-settings").css("background-color", "lightgrey");
-                        $("#operator-settings").css("background-color", "white");
-                        $("#teacher-settings").css("background-color", "white");
+                    $("#teacher-settings").css("background-color", "lightgrey");
+                    $("#student-settings").css("background-color", "white");
+                    $("#operator-settings").css("background-color", "white");
 
-                        $("#student-section").css("display", "block");
-                        $("#teacher-section").css("display", "none");
-                        $("#operator-section").css("display", "none");
-                    });
+                    $("#teacher-section").css("display", "block");
+                    $("#operator-section").css("display", "none");
+                    $("#student-section").css("display", "none");
+                });
 
-                    $('#teacher-settings').click(function () {
+                $('#operator-settings').click(function () {
 
-                        $("#teacher-settings").css("background-color", "lightgrey");
-                        $("#student-settings").css("background-color", "white");
-                        $("#operator-settings").css("background-color", "white");
+                    $("#teacher-settings").css("background-color", "white");
+                    $("#student-settings").css("background-color", "white");
+                    $("#operator-settings").css("background-color", "lightgrey");
 
-                        $("#teacher-section").css("display", "block");
-                        $("#operator-section").css("display", "none");
-                        $("#student-section").css("display", "none");
-                    });
-
-                    $('#operator-settings').click(function () {
-
-                        $("#teacher-settings").css("background-color", "white");
-                        $("#student-settings").css("background-color", "white");
-                        $("#operator-settings").css("background-color", "lightgrey");
-
-                        $("#teacher-section").css("display", "none");
-                        $("#student-section").css("display", "none");
-                        $("#operator-section").css("display", "block");
-                    });
+                    $("#teacher-section").css("display", "none");
+                    $("#student-section").css("display", "none");
+                    $("#operator-section").css("display", "block");
+                });
 
 
-                    $('#adminCurrentPassword').on('keyup', function () { //validate the passwords when password resetting
-                        if ($('#adminCurrentPassword').val() === "<%=userData.getPassword()%>") {
-                            $("#pw_reset_section").css("display", "block");
+                $('#adminCurrentPassword').on('keyup', function () { //validate the passwords when password resetting
+                    if ($('#adminCurrentPassword').val() === "<%=userData.getPassword()%>") {
+                        $("#pw_reset_section").css("display", "block");
 
-                            $('#adminNewRepeatPassword').on('keyup', function () {
-                                if ( $('#adminNewPassword').val() !== "" && $('#adminNewRepeatPassword').val() !== "" && ( $('#adminNewPassword').val() === $('#adminNewRepeatPassword').val() )) {
-                                    $("#updateAdminProfileButton").css("visibility", "visible");
-                                } else {
-                                    $("#updateAdminProfileButton").css("visibility", "hidden");
-                                }
-                            });
+                        $('#adminNewRepeatPassword').on('keyup', function () {
+                            if ($('#adminNewPassword').val() !== "" && $('#adminNewRepeatPassword').val() !== "" && ($('#adminNewPassword').val() === $('#adminNewRepeatPassword').val())) {
+                                $("#updateAdminProfileButton").css("visibility", "visible");
+                            } else {
+                                $("#updateAdminProfileButton").css("visibility", "hidden");
+                            }
+                        });
 
-                        } else {
-                            $("#pw_reset_section").css("display", "none");
-                        }
+                    } else {
+                        $("#pw_reset_section").css("display", "none");
+                    }
 
 
-                    });
+                });
             });
 
         </script>
@@ -218,7 +217,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">Dashboard <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="#">Admin Dashboard<span class="sr-only">(current)</span></a>
                     </li>
 
                 </ul>
@@ -230,15 +229,12 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
                     <a class="dropdown-item"  data-toggle="modal" data-target="#userProfileView">View profile</a>
-                    <a class="dropdown-item" href="#">Settings</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="index.jsp?status=logout"><strong>Log Out</strong></a>
                 </div>
             </div>
         </nav>
-        <!--        Navigation bar-->
-
-
+        <!-- Navigation bar-->
 
         <!-- User profile Modal -->
         <div class="modal fade" id="userProfileView" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -281,7 +277,7 @@
                             <input type="hidden" name="updateName" value="<%=userData.getUserId()%>">
                             <input type="hidden" name="updateRole" value="<%=userData.getUserRole()%>">
 
-                            <div style="margin-top:4%; " class="form-group">
+                            <div style="margin-top:4%;" class="form-group">
                                 <div class="row mr-1" style="float: right;">
                                     <button id="updateAdminProfileButton" type="submit" class="btn btn-warning mr-2" style="color: white;">Update Profile</button>
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -295,10 +291,6 @@
             </div>
         </div>
         <!-- User profile Modal -->
-
-
-
-
 
         <!--        Page content-->
         <div class="page-content">
@@ -522,6 +514,7 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <h5 class="card-title">User Details</h5>
+
                                         <div class="row" style="margin-bottom: 10px;">
                                             <label class="col-md-4">Nic</label>
                                             <input class="col-md-8" disabled value="Not define"></input>

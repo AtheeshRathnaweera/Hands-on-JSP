@@ -27,17 +27,17 @@
 
 <%
 
-    String actionClass = "" + request.getParameter("action");
-    String classGrade = "" + request.getParameter("classGrade");
-    String classId = "" + request.getParameter("classId");
-    String className = "" + request.getParameter("className");
+    String actionCl = "" + request.getParameter("action");
+    String clGrade = "" + request.getParameter("classGrade");
+    String clId = "" + request.getParameter("classId");
+    String clName = "" + request.getParameter("className");
 
-    if (actionClass.equals("addAClass")) {
+    if (actionCl.equals("addAClass")) {
 
         ClassModel tempClass = new ClassModel();
 
-        tempClass.setGrade(Integer.parseInt(classGrade));
-        tempClass.setName(className);
+        tempClass.setGrade(Integer.parseInt(clGrade));
+        tempClass.setName(clName);
 
         ClassAPI classAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(ClassAPI.class);
 
@@ -47,15 +47,14 @@
 
         if (ss) {
             session.setAttribute("save_status", "1");
-
-            response.sendRedirect("./studentDetails.jsp?grade=" + classGrade);
+            response.sendRedirect("../classPage.jsp?grade=" + clGrade+"&status=saved");
 
         } else {
             session.setAttribute("save_status", "0");
-            response.sendRedirect("./studentDetails.jsp?grade=" + classGrade);
+            response.sendRedirect("../classPage.jsp?grade=" + clGrade+"&status=saveFailed");
         }
 
-    } else if (actionClass.equals("addAStudent")) {
+    } else if (actionCl.equals("addAStudent")) {
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date birthDate = null;
@@ -89,7 +88,7 @@
 
         tempStudent.setBday(birthday);
         tempStudent.setEnrolledDate(enrolledDateRec);
-        tempStudent.setCurrentClassId(Integer.parseInt(classId));
+        tempStudent.setCurrentClassId(Integer.parseInt(clId));
 
         System.out.println("object : " + tempStudent.toString());
 
@@ -98,10 +97,10 @@
         Boolean ss = save.execute().body();
 
         if (ss) {
-            response.sendRedirect("./studentDetails.jsp?grade=" + classGrade + "&class=" + classId + "&name=" + className + "&status=saved");
+            response.sendRedirect("./studentDetails.jsp?grade=" + clGrade + "&class=" + clId + "&name=" + clName + "&status=saved");
 
         } else {
-            response.sendRedirect("./studentDetails.jsp?grade=" + classGrade + "&class=" + classId + "&name=" + className + "&status=notSaved");
+            response.sendRedirect("./studentDetails.jsp?grade=" + clGrade + "&class=" + clId + "&name=" + clName + "&status=notSaved");
         }
 
     }
@@ -109,9 +108,61 @@
 %>
 
 <%!
-    public List<ClassModel> getAllClassesByGrade(int grade) {
+    ClassAPI classAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(ClassAPI.class);
 
-        ClassAPI classAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(ClassAPI.class);
+    public Long getAllClassCount() {
+
+        Call<Long> classAmountCall = classAPI.getAllCount();
+        Long count = null;
+
+        try {
+            count = classAmountCall.execute().body();
+        } catch (Exception e) {
+            System.out.println("Exception occur in ClassController : getAllClassCount : 121 " + e);
+        }
+
+        return count;
+
+    }
+
+    public Long getClassAmountOfAGrade(int grade) {
+
+        Call<Long> classAmountCall = classAPI.getClassAmountOfAGrade(grade);
+        Long count = null;
+
+        try {
+            count = classAmountCall.execute().body();
+        } catch (Exception e) {
+            System.out.println("Exception occur in ClassController : getAllClassCount : 121 " + e);
+        }
+
+        return count;
+
+    }
+
+    public int getStudentAmountOfAClass(int classId) {
+
+        System.out.println("getStudentAmountClass started.");
+
+        Call<Long> classAmountCall = classAPI.getStudentAmountOfAClass(classId);
+        Long count = null;
+
+        try {
+            count = classAmountCall.execute().body();
+            System.out.println("amount of classes : "+count);
+        } catch (Exception e) {
+            System.out.println("Exception occur in ClassController : getAllClassCount : 121 " + e);
+        }
+
+        if(count == null){
+            return 0;
+        }
+
+        return count.intValue();
+
+    }
+
+    public List<ClassModel> getAllClassesByGrade(int grade) {
 
         Call<List<ClassModel>> classDataCall = classAPI.getAllClassesByGrade(grade);
 
@@ -147,13 +198,13 @@
 
     }
 
-    public TeacherModel getClassTeacher(int classId) {
+    public List<TeacherModel> getClassTeacher(int classId) {
 
         ClassAPI teacherAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(ClassAPI.class);
 
-        Call<TeacherModel> teacherDataCall = teacherAPI.getClassTeacher(classId);
+        Call<List<TeacherModel>> teacherDataCall = teacherAPI.getClassTeacher(classId);
 
-        TeacherModel recTeacherData = new TeacherModel();
+        List<TeacherModel> recTeacherData = new ArrayList<>();
 
         try {
             recTeacherData = teacherDataCall.execute().body();
@@ -165,6 +216,29 @@
         return recTeacherData;
     }
 
+    public String getClassTeacherName(int classId) {
+        ClassAPI teacherAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(ClassAPI.class);
 
+        Call<List<TeacherModel>> teacherDataCall = teacherAPI.getClassTeacher(classId);
+
+        List<TeacherModel> recTeacherData = new ArrayList<>();
+        String result = "Not assigned";
+
+        try {
+            recTeacherData = teacherDataCall.execute().body();
+
+            if (recTeacherData.size() != 0) {
+                result = recTeacherData.get(0).getFirstName() + " " + recTeacherData.get(0).getLastName();
+
+            }
+            System.out.println("received teacher data : " + recTeacherData.toString());
+            
+        } catch (Exception e) {
+            System.out.println("Exception in class Controller : " + e);
+        }
+
+        return result;
+
+    }
 %>
 

@@ -29,10 +29,8 @@
         TeacherModel teacherData = new TeacherModel();
 
         try {
-
             teacherData = teacherDataCall.execute().body();
             System.out.println("received teacher : " + teacherData.toString());
-
         } catch (Exception e) {
             System.out.println("Exception in teacher Controller : " + e);
         }
@@ -41,20 +39,17 @@
 
     }
 
-    public Long getTeacherUsersCount() {
+    public Long getTeachersCount() {
 
         TeacherAPI teacherAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(TeacherAPI.class);
         Call<Long> teacherCountCall = teacherAPI.getTeacherCount();
 
         Long results = null;
-        Long tCount = null;
 
         try {
             results = teacherCountCall.execute().body();
-
         } catch (Exception e) {
-            System.out.println("Exception in Teacher controller : " + e);
-
+            System.out.println("Exception in Teacher controller : getTeachersCount " + e);
         }
 
         return results;

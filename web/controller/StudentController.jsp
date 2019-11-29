@@ -41,19 +41,15 @@
 
     }
 
-    public Long getStudentUsersCount() {
+    public Long getStudentsCount() {
 
         StudentAPI studentAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(StudentAPI.class);
         Call<Long> studentCountCall = studentAPI.getStudentCount();
 
         Long results = null;
-        Long sCount = null;
 
         try {
             results = studentCountCall.execute().body();
-
-            
-
         } catch (Exception e) {
             System.out.println("Exception in Student controller : " + e);
 

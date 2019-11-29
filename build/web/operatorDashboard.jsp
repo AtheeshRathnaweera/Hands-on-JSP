@@ -4,6 +4,7 @@
 <%@include file="controller/StudentController.jsp" %>
 <%@include file="controller/TeacherController.jsp" %>
 <%@include file="controller/AdminController.jsp" %>
+<%@include file="controller/ClassController.jsp" %>
 
 <html>
     <head>
@@ -53,9 +54,21 @@
             footer {
                 background-color: #555;
                 color: white;
-                position:fixed;
-                bottom:0;
-                left:0;
+                margin-top:1%;
+                /*                position:fixed;*/
+                /*                bottom:0;
+                                left:0;*/
+            }
+
+            .gradeCard:hover{
+                background-color: lightgrey;
+                opacity: 2;
+                -webkit-opacity: 2;
+                -moz-opacity: 2;
+                transition: 0.6s ease;
+                -webkit-transition: 0.6s ease;
+                -moz-transition: 0.6s ease;
+
             }
 
             #studentSearchInput, #teacherSearchInput, #operatorSearchInput {
@@ -106,7 +119,7 @@
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MMM-dd");
         String status = "" + request.getParameter("status");
 
-        if (userData == null || !userData.getUserRole().equals("admin")) {
+        if (userData == null) {
             System.out.println("Home page : role or userId is null ");
             response.sendRedirect("index.jsp");
             return;
@@ -123,6 +136,10 @@
 
         System.out.println("userdata : " + userData.toString());
 
+        Long classAmount = getAllClassCount() - 1; //-1 for remove the default null class
+        Long studentsAmount = getAllStudentsCount();
+        Long teachersAmount = getTeachersCount();
+
     %>
 
 
@@ -133,17 +150,10 @@
 
         <script>
 
-
-
             $(document).ready(function () {
-            <%if (status.equals("savedOp")) {%>
                 jQuery(function () {
-                    jQuery('#operator-settings').click();
+                    jQuery('#class-settings').click();
                 });
-                window.history.replaceState(null, null, window.location.pathname);
-            <%} else {%>
-                $("#student-settings").css("background-color", "lightgrey");
-            <%}%>
 
                 $("#pw_reset_section").css("display", "none"); //hide the password reset section
                 $("#updateAdminProfileButton").css("visibility", "hidden");
@@ -152,34 +162,34 @@
                 $('#student-settings').click(function () {
 
                     $("#student-settings").css("background-color", "lightgrey");
-                    $("#operator-settings").css("background-color", "white");
+                    $("#class-settings").css("background-color", "white");
                     $("#teacher-settings").css("background-color", "white");
 
                     $("#student-section").css("display", "block");
                     $("#teacher-section").css("display", "none");
-                    $("#operator-section").css("display", "none");
+                    $("#class-section").css("display", "none");
                 });
 
                 $('#teacher-settings').click(function () {
 
                     $("#teacher-settings").css("background-color", "lightgrey");
                     $("#student-settings").css("background-color", "white");
-                    $("#operator-settings").css("background-color", "white");
+                    $("#class-settings").css("background-color", "white");
 
                     $("#teacher-section").css("display", "block");
-                    $("#operator-section").css("display", "none");
+                    $("#class-section").css("display", "none");
                     $("#student-section").css("display", "none");
                 });
 
-                $('#operator-settings').click(function () {
+                $('#class-settings').click(function () {
 
                     $("#teacher-settings").css("background-color", "white");
                     $("#student-settings").css("background-color", "white");
-                    $("#operator-settings").css("background-color", "lightgrey");
+                    $("#class-settings").css("background-color", "lightgrey");
 
                     $("#teacher-section").css("display", "none");
                     $("#student-section").css("display", "none");
-                    $("#operator-section").css("display", "block");
+                    $("#class-section").css("display", "block");
                 });
 
 
@@ -209,7 +219,6 @@
 
         <!--        Navigation bar-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark" >
-            <!--            <a class="navbar-brand" href="#">PRESIDENT S COLLEGE</a>-->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -217,7 +226,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">Admin Dashboard<span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="#">Operator Dashboard<span class="sr-only">(current)</span></a>
                     </li>
 
                 </ul>
@@ -297,6 +306,29 @@
 
             <div class="stats-cards" style="padding-left: 1%; padding-right: 1%;">
                 <div class="row">
+
+                    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3" style="padding:1%;">
+
+                        <div class="card" style=" height: 100%; cursor:pointer;" id="class-settings" >
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-xs-4 col-sm-4 col-lg-4">
+                                        <img class="cardAvatar" src="assets/images/classOne.png" alt="Class Avatar" style="height: auto; "> 
+                                    </div>
+
+                                    <div class="col-xs-8 col-sm-8 col-lg-8">
+                                        <h4 style="font-size:1.1vw;">Classes</h4>
+                                        <h3 style="font-size:3.5vw;"><%=classAmount%></h3>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
                     <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3" style="padding:1%;">
 
                         <div class="card "style=" height: 100%; cursor: pointer;" id="student-settings">
@@ -307,8 +339,8 @@
                                     </div>
 
                                     <div class="col-xs-8 col-md-8 col-sm-8 col-lg-8">
-                                        <h4 style="font-size:1.1vw;">Student Users</h4>
-                                        <h3 style="font-size:3.5vw;"><%=studentUsersCount%></h3>
+                                        <h4 style="font-size:1.1vw;">Students</h4>
+                                        <h3 style="font-size:3.5vw;"><%=studentsAmount%></h3>
                                     </div>
                                 </div>
 
@@ -328,8 +360,8 @@
                                     </div>
 
                                     <div class="col-xs-8 col-sm-8 col-lg-8">
-                                        <h4 style="font-size:1.1vw;">Teacher Users</h4>
-                                        <h3 style="font-size:3.5vw;"><%=teacherUsersCount%></h3>
+                                        <h4 style="font-size:1.1vw;">Teachers</h4>
+                                        <h3 style="font-size:3.5vw;"><%=teachersAmount%></h3>
                                     </div>
                                 </div>
 
@@ -340,27 +372,6 @@
 
                     </div>
 
-                    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3" style="padding:1%;">
-
-                        <div class="card" style=" height: 100%; cursor:pointer;" id="operator-settings" >
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-xs-4 col-sm-4 col-lg-4">
-                                        <img class="cardAvatar" src="assets/images/family.png" alt="Family Avatar" style="height: auto; "> 
-                                    </div>
-
-                                    <div class="col-xs-8 col-sm-8 col-lg-8">
-                                        <h4 style="font-size:1.1vw;">Operators</h4>
-                                        <h3 style="font-size:3.5vw;"><%=operatorsCount%></h3>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                    </div>
 
                     <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3" style="padding:1%;">
                         <a href="" style="color: inherit;">
@@ -395,6 +406,38 @@
 
 
             <div class="card-content" style="padding-left: 1%; padding-right: 1%;">
+                <div  id="class-section" style="display: none">
+                    <h3>Classes Section</h3>
+                    <div class="col-sm-12">
+
+                        <div class="list-group">
+                            <% for (int i = 0; i < 13; i++) {%>
+
+                            <a class="card gradeCard" style="margin: 0.2%; cursor: pointer; color: inherit; text-decoration:none;" href="./classPage.jsp?grade=<%=(i+1)%>">
+                                <div class="row" style="padding-left: 1%; padding-top: 0.5%;">
+                                    <div class="gradeName col-md-2" >
+                                        <h5>Grade <%=(i + 1)%></h5>
+                                    </div>
+                                    <div class="gradeName col-md-10">
+                                        <div class="teacherName"></div>
+                                    </div>
+                                </div>
+                                <div class="teacherName" style="padding-left: 1%;">
+                                    <h6>Total classes : <%=getClassAmountOfAGrade(i + 1)%></h6>
+                                </div>
+
+                            </a>
+
+                            <%}%>
+
+
+                        </div> 
+
+                    </div>
+
+
+                </div>
+
                 <div  id="student-section" style="display: block">
                     <h3>Students section</h3>
                     <div class="row">
@@ -483,148 +526,7 @@
                         </div>
                     </div>
                 </div>
-                <div  id="operator-section" style="display: none">
-                    <h3>Operators section</h3>
-                    <div class="row">
-                        <div class="col-md-8">
-                            <input style="background-image: url('assets/images/searchIcon.png');" type="text" id="operatorSearchInput" onkeyup="searchFunction({inputId: 'operatorSearchInput', table: 'operatorTable'})" placeholder="Search for users..">
-                            <div style="height: 77%; overflow-y: auto">
-                                <table id="operatorTable">
-                                    <tr class="header">
-                                        <th style="width:30%;">NIC</th>
-                                        <th style="width:40%;">NAME</th>
-                                        <th style="width:30%;">STATUS</th>
-                                    </tr>
-                                    <%
-                                        for (OperatorModel us : operators) {
 
-                                    %>
-                                    <tr style="cursor: pointer;" onclick="operatorFunc({nic: '<%=us.getNic()%>', name: '<%=us.getFirstName() + " " + us.getLastName()%>', address: '<%=us.getAddress()%>', birthday: '<%=us.getBday()%>', enrolledDate: '<%=us.getEnrolledDate()%>', status: '<%=us.getStatus()%>'})">
-                                        <td><%=us.getNic()%></td>
-                                        <td><%=us.getFirstName() + " " + us.getLastName()%></td>
-                                        <td style="<% if (us.getStatus().equals("active")) {%> color:green; <%} else if (us.getStatus().equals("blocked")) {%> color:red; <%} else {%>color:lightblue;<%}%>"><%=us.getStatus()%></td>
-                                    </tr>                              
-                                    <%}%>                       
-                                </table> 
-                            </div>
-                        </div>
-
-                        <div class="col-md-4" >
-                            <div id="operator_data_section">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 class="card-title">User Details</h5>
-
-                                        <div class="row" style="margin-bottom: 10px;">
-                                            <label class="col-md-4">Nic</label>
-                                            <input class="col-md-8" disabled value="Not define"></input>
-                                        </div>
-
-                                        <div class="row" style="margin-bottom: 10px;">
-                                            <label class="col-md-4">Name</label>
-                                            <input class="col-md-8" disabled value="Not define"></input>
-                                        </div> 
-
-                                        <div class="row" style="margin-bottom: 10px;">
-                                            <label class="col-md-4">Birthday</label>
-                                            <input class="col-md-8" disabled value="Not define"></input>
-                                        </div>
-
-                                        <div class="row" style="margin-bottom: 10px;">
-                                            <label class="col-md-4">Address</label>
-                                            <input class="col-md-8" disabled value="Not define"></input>
-                                        </div> 
-
-                                        <div class="row" style="margin-bottom: 10px;">
-                                            <label class="col-md-4">Enrolled Date</label>
-                                            <input class="col-md-8" disabled value="Not define"></input>
-                                        </div> 
-
-                                        <div class="row">
-                                            <label class="col-md-4">Status</label>
-                                            <input class="col-md-8" disabled value="Not define"></input>
-                                        </div>                                 
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-primary" style="width: 100%; margin-top: 3%;" data-toggle="modal" data-target="#addOperatorModal">Add Operator</button>
-
-                        </div>
-                    </div>
-
-                    <!-- add operator Modal -->
-                    <div class="modal fade" id="addOperatorModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header bg-dark" >
-                                    <h5 class="modal-title" id="exampleModalLongTitle" style="color: white;">Add Operator</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <!--                        operator add modal -->
-                                    <form action="controller/AdminController.jsp"> 
-                                        <div class="form-group">
-                                            <label for="operatorNic">NIC</label>
-                                            <input class="form-control" id="operatorNic" name="nic" pattern="\d{11}|\d{9}\w{1}"  maxlength=10 minlength=9 required>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="operatorFirstName">First Name</label>
-                                            <input class="form-control" id="operatorFirstName" name="firstName" required>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="operatorLastName">Last Name</label>
-                                            <input class="form-control" id="operatorLastName" name="lastName" required>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="operatorLastName">Birthday</label>
-                                            <input class="form-control"  type="date" name="birthday" required>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="operatorAddress">Address</label>
-                                            <input class="form-control" id="operatorAddress" name="address" required>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="operatorLastName">Enrolled Date</label>
-                                            <input class="form-control" type="date" name="enrolledDate" required>
-                                        </div>
-
-                                        <div class="form-group" >
-                                            <label style="width: 100%;">Status</label>
-                                            <div class="row" style="text-align: center; width: 100%;">
-                                                <input class="col-sm-2" type="radio" name="status" value="active" checked> Active
-                                                <input class="col-sm-2" type="radio" name="status" value="blocked" > Blocked
-                                                <input class="col-sm-2" type="radio" name="status" value="retired" > Retired
-                                            </div>
-                                        </div>
-
-                                        <input type="hidden" name="action" value="addOperator">
-
-                                        <div style="margin-top:4%; " class="form-group">
-                                            <div class="row mr-1" style="float: right;">
-                                                <button type="submit" class="btn btn-secondary mr-2">Save</button>
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                            </div>
-                                        </div>
-
-                                    </form>
-                                    <!--                        Student user details -->
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                    <!-- add operator Modal -->
-
-
-
-                </div>
 
 
             </div>

@@ -7,27 +7,51 @@
 
         <link href="assets/styles/indexPage.css" rel="stylesheet" type="text/css">
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/table-to-json@0.13.0/lib/jquery.tabletojson.min.js" integrity="sha256-AqDz23QC5g2yyhRaZcEGhMMZwQnp8fC6sCZpf+e7pnw=" crossorigin="anonymous"></script>
-
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     </head>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
- 
-            $('#password, #rePwInput').on('keyup', function () {
-                if ($('#password').val() === $('#rePwInput').val()) {
-                    $('#signInButton').html("SignIn").css('background-color', 'green').prop("disabled", false);
-                } else {
-                    $('#signInButton').html("Password mismatched.").css('background-color', 'red').prop("disabled", true);
-                }
+    <% String status = "" + request.getParameter("status"); %>
 
+    <body>
+
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+
+            <%if (status.equals("failed")) {%>
+
+                $("#notificationHolder").css("display", "block");
+                $(".failedAlert").hide().fadeIn(400).delay(1700).fadeOut(800, function () {
+                    $(".failedAlert").fadeOut(1000, 500);
+                    $("#notificationHolder").css("display", "none");
+                });
+            <%}%>
+                
+                window.history.replaceState(null, null, window.location.pathname);
+
+                $('#password, #rePwInput').on('keyup', function () {
+                    if ($('#password').val() === $('#rePwInput').val()) {
+                        $('#signInButton').html("SignIn").css('background-color', 'green').prop("disabled", false);
+                    } else {
+                        $('#signInButton').html("Password mismatched.").css('background-color', 'red').prop("disabled", true);
+                    }
+
+
+                });
 
             });
-        });
-    </script>
-    
-    <body>
+
+        </script>
+
+        <div class="notification" id="notificationHolder" style="display: none;">
+            <div class="col-sm-3 failedAlert card m-2" style="float: right; background-color: green;"> 
+                <div class="card-body">
+                    <p style="color: white; font-size: 1.2em; margin: auto;">SignIn failed !</p> 
+                </div>
+            </div>
+        </div>
 
         <div class="content">
 
@@ -56,18 +80,15 @@
                     <div class="labelHolder">
                         <label for="roleType" id="roleType"><b>Select the role</b></label>
                     </div>
-                    <input type="radio" name="role" value="student" checked> Student
-                    <input type="radio" name="role" value="teacher" > Teacher
-                    <input type="radio" name="role" value="teacher" > Operator
-
+                    
+                    <input class="col-sm-2" type="radio" name="role" value="student" checked> Student
+                    <input class="col-sm-2" type="radio" name="role" value="teacher"> Teacher
+                    <input class="col-sm-2" type="radio" name="role" value="operator"> Operator
 
                     <input type="hidden" name="action" value="signin">
 
-
                     <div style="margin-top:4%;" class="actionButtons">
                         <button type="submit" id="signInButton">SignIn</button>
-                       
-                       
                     </div>
 
                 </div>
