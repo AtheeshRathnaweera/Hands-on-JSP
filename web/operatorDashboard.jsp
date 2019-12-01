@@ -146,7 +146,7 @@
 
 
 
-    <body>
+    <body style="background-color: whitesmoke;">
 
         <script>
 
@@ -313,12 +313,12 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-xs-4 col-sm-4 col-lg-4">
-                                        <img class="cardAvatar" src="assets/images/classOne.png" alt="Class Avatar" style="height: auto; "> 
+                                        <img class="cardAvatar" src="assets/images/classOne.png" alt="Class Avatar" style="height: auto;"> 
                                     </div>
 
                                     <div class="col-xs-8 col-sm-8 col-lg-8">
-                                        <h4 style="font-size:1.1vw;">Classes</h4>
-                                        <h3 style="font-size:3.5vw;"><%=classAmount%></h3>
+                                        <div style="font-size:1.1vw;">Classes</div>
+                                        <div style="font-size:3.3vw;"><%=classAmount%></div>
                                     </div>
                                 </div>
 
@@ -339,8 +339,8 @@
                                     </div>
 
                                     <div class="col-xs-8 col-md-8 col-sm-8 col-lg-8">
-                                        <h4 style="font-size:1.1vw;">Students</h4>
-                                        <h3 style="font-size:3.5vw;"><%=studentsAmount%></h3>
+                                        <div style="font-size:1.1vw;">Students</div>
+                                        <div style="font-size:3.3vw;"><%=studentsAmount%></div>
                                     </div>
                                 </div>
 
@@ -360,8 +360,8 @@
                                     </div>
 
                                     <div class="col-xs-8 col-sm-8 col-lg-8">
-                                        <h4 style="font-size:1.1vw;">Teachers</h4>
-                                        <h3 style="font-size:3.5vw;"><%=teachersAmount%></h3>
+                                        <div style="font-size:1.1vw;">Teachers</div>
+                                        <div style="font-size:3.3vw;"><%=teachersAmount%></div>
                                     </div>
                                 </div>
 
@@ -374,7 +374,7 @@
 
 
                     <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3" style="padding:1%;">
-                        <a href="" style="color: inherit;">
+                        <a style="color: inherit;">
                             <div class="card" style=" height: 100%;">
                                 <div class="card-body">
 
@@ -384,8 +384,8 @@
                                         </div>
 
                                         <div class="col-xs-8 col-sm-8 col-lg-8">
-                                            <h4 style="font-size:1.1vw;">Notice</h4>
-                                            <h3 style="font-size:1vw;">Important notices will be display here</h3>
+                                            <div style="font-size:1.1vw;">Notice</div>
+                                            <div style="font-size:1vw;">Important notices will be display here</div>
                                         </div>
                                     </div>
 
@@ -407,23 +407,30 @@
 
             <div class="card-content" style="padding-left: 1%; padding-right: 1%;">
                 <div  id="class-section" style="display: none">
-                    <h3>Classes Section</h3>
+
+                    <div style=" font-size: 1.8vw; margin-bottom: 1%;">Classes Section</div>
+
                     <div class="col-sm-12">
 
                         <div class="list-group">
                             <% for (int i = 0; i < 13; i++) {%>
 
-                            <a class="card gradeCard" style="margin: 0.2%; cursor: pointer; color: inherit; text-decoration:none;" href="./classPage.jsp?grade=<%=(i+1)%>">
-                                <div class="row" style="padding-left: 1%; padding-top: 0.5%;">
-                                    <div class="gradeName col-md-2" >
-                                        <h5>Grade <%=(i + 1)%></h5>
+                            <a class="card gradeCard col-md-12 " style="margin: 0.2vw; cursor: pointer; color: inherit; text-decoration:none;" href="./classPage.jsp?grade=<%=(i + 1)%>">
+                                <div class="row">
+                                    <div class="col-md-1" style="background-color: #1874CD; display: flex; justify-content: center; align-items: center;">
+                                        <div style='font-size: 1.8vw; color: white;'> <%=String.format("%02d", (i + 1))%></div>
                                     </div>
-                                    <div class="gradeName col-md-10">
-                                        <div class="teacherName"></div>
+                                    <div class="col-md-11" style="padding: 0.5%;">
+                                        <div class="row" style="padding-left: 1%; ">
+                                            <div class="gradeName col-md-2" >
+                                                <div style="font-size: 1.3vw;">Grade <%=(i + 1)%></div>
+                                            </div>
+
+                                        </div>
+                                        <div class="teacherName" style="padding-left: 1%;">
+                                            <div style="font-size: 0.9vw; font-style: italic;">Total classes : <%=getClassAmountOfAGrade(i + 1)%></div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="teacherName" style="padding-left: 1%;">
-                                    <h6>Total classes : <%=getClassAmountOfAGrade(i + 1)%></h6>
                                 </div>
 
                             </a>
@@ -537,8 +544,8 @@
         <!--        Navigation bar-->
 
 
-        <footer class="container-fluid text-center">
-            <p>Footer Text</p>
+        <footer class="container-fluid text-center" style="padding: 1%;">
+            <div style="font-size: 1.3vw;">Footer Text</div>
         </footer>
 
 

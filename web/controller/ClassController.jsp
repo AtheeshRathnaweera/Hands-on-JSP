@@ -33,6 +33,8 @@
     String clName = "" + request.getParameter("className");
 
     if (actionCl.equals("addAClass")) {
+        
+        System.out.println("add a new class method started.");
 
         ClassModel tempClass = new ClassModel();
 
@@ -41,11 +43,11 @@
 
         ClassAPI classAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(ClassAPI.class);
 
-        Call<Boolean> save = classAPI.saveAClass(tempClass);
+        Call<ClassModel> save = classAPI.saveAClass(tempClass);
 
-        Boolean ss = save.execute().body();
+        ClassModel ss = save.execute().body();
 
-        if (ss) {
+        if (ss != null) {
             session.setAttribute("save_status", "1");
             response.sendRedirect("../classPage.jsp?grade=" + clGrade+"&status=saved");
 
@@ -117,6 +119,7 @@
 
         try {
             count = classAmountCall.execute().body();
+            System.out.println("counttt: "+count);
         } catch (Exception e) {
             System.out.println("Exception occur in ClassController : getAllClassCount : 121 " + e);
         }

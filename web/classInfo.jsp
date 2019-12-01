@@ -110,7 +110,7 @@
 
 
 
-    <body>
+    <body style="background-color: whitesmoke;">
         <script>
             $(document).ready(function () {
 
@@ -235,7 +235,7 @@
                     
                 </div>
                 <div class="col-md-10">
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addClassModal" style="float: right;">Add a class</button> 
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addClassModal" style="float: right;">Add a student</button> 
                 </div>
             </div>
             <!--New class adding-->

@@ -71,6 +71,7 @@
                 -webkit-transition: 0.6s ease;
                 -moz-transition: 0.6s ease;
 
+
             }
 
 
@@ -88,7 +89,7 @@
     <%        UserModel userData = (UserModel) session.getAttribute("userData");
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MMM-dd");
         String status = "" + request.getParameter("status");
-        
+
         String currentGrade = "" + request.getParameter("grade");
 
         System.out.println("status = " + status);
@@ -108,7 +109,7 @@
 
 
 
-    <body>
+    <body style="background-color: whitesmoke;">
         <script>
             $(document).ready(function () {
 
@@ -120,6 +121,121 @@
                     $("#notificationHolder").css("display", "none");
                 });
             <%}%>
+
+
+                getClassesOfGrade(<%=currentGrade%>);
+
+
+                function getClassesOfGrade(gradeNum) {
+                    //get all the classes of the grade and display in #allClassesHolder div
+                    $.ajax({
+                        type: "get",
+                        url: "http://localhost:8090/api/studentMg/class/getClasses/" + gradeNum, //this is my servlet
+                        data: {},
+                        crossDomain: true,
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.length < 1) {
+                                var noDataMessage = $('<div class="col-md-12" id="noDataDiv" style="color: grey; font-size: 1vw; text-align:center; margin-top:10%;">Nothing to display</div>');
+                                $('#allClassesHolder').append(noDataMessage);
+                            } else {
+                                for (var i = 0; i < data.length; i++) {
+                                    var classCard = $('<div class="col-md-3 col-sm-3" style="padding: 1%;">\n\
+                                    <a class="singleClassCard card" style="color: inherit; text-decoration:none; border-radius: 10px;" href="./classInfo.jsp?grade=' + gradeNum + '&classid=' + data[i].id + '">\n\
+                                        <div  style="background-color: green; text-align: center; color: white; border-radius: 10px 10px 0 0; padding: 2%;">\n\
+                                            <h4 style="font-size: 1.6vw;">' + data[i].name + '</h4>\n\
+                                        </div>\n\
+                                        <div class="card-body" style="margin-left: 3%;">\n\
+                                            <div class="row" style="font-size: 1.1vw;">Teacher Name : <span style="font-style: italic; margin-left: 2%;" id="teacherName' + data[i].id + '"></span></div>\n\
+                                            <div class="row" style="font-size: 1.1vw;">Total Students : <span style="font-style: italic; margin-left: 2%;" id="totalStudents' + data[i].id + '"></span></div>\n\
+                                        </div>\n\
+                                    </a>');
+                                    $('#allClassesHolder').append(classCard);
+                                    getClassTeacherName(data[i].id);
+                                    getClassStudentsAmount(data[i].id);
+                                }
+
+                            }
+
+
+                        }
+                    });
+
+                }
+
+                function getClassTeacherName(classId) {
+                    $.ajax({
+                        type: "get",
+                        url: "http://localhost:8090/api/studentMg/class/getTeacher/" + classId,
+                        crossDomain: true,
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.length < 1) {
+                                $("#teacherName" + classId).text("not assigned");
+                            } else {
+                                var teacherName = data[0].firstName + " " + data[0].lastName;
+                                $("#teacherName" + classId).text(teacherName);
+                            }
+
+                        }
+
+                    });
+                }
+
+                function getClassStudentsAmount(classId) {
+                    $.ajax({
+                        type: "get",
+                        url: "http://localhost:8090/api/studentMg/class/getStudentsCount/" + classId,
+                        crossDomain: true,
+                        dataType: "json",
+                        success: function (data) {
+                            $("#totalStudents" + classId).text(data);
+                        }
+
+                    });
+                }
+
+                $("#addModalSaveBtn").click(function () {
+                    $("#addClassModalCloseBtn").click();
+                    var className = $('#modalClassName').val();
+                    saveAClass(<%=currentGrade%>, className);
+                });
+
+                function saveAClass(gradeRec, className) {
+                    console.log("save classes method started " + gradeRec + "  " + className);
+                    $.ajax({
+                        type: "post",
+                        contentType: 'application/json; charset=utf-8',
+                        url: "http://localhost:8090/api/studentMg/class/add",
+                        data: '{ "grade": "' + gradeRec + '", "name": "' + className + '"}',
+                        crossDomain: true,
+                        dataType: "json",
+                        success: function (data) {
+                            console.log("received : " + data);
+                            if (data.length < 0) {
+                                console.log("new class save failed.");
+                            } else {
+                                $('#noDataDiv').remove();
+                                var newClassCard = $('<div class="col-md-3 col-sm-3" style="padding: 1%;">\n\
+                                    <a class="singleClassCard card" style="color: inherit; text-decoration:none; border-radius: 10px;" href="./classInfo.jsp?grade=' + gradeRec + '&classid=' + data.id + '">\n\
+                                        <div  style="background-color: green; text-align: center; color: white; border-radius: 10px 10px 0 0; padding: 2%;">\n\
+                                            <h4 style="font-size: 1.6vw;">' + data.name + '</h4>\n\
+                                        </div>\n\
+                                        <div class="card-body" style="margin-left: 3%;">\n\
+                                            <div class="row" style="font-size: 1.1vw;">Teacher Name : <span style="font-style: italic; margin-left: 2%;" id="teacherName' + data.id + '"></span></div>\n\
+                                            <div class="row" style="font-size: 1.1vw;">Total Students : <span style="font-style: italic; margin-left: 2%;" id="totalStudents' + data.id + '"></span></div>\n\
+                                        </div>\n\
+                                    </a>');
+                                $('#allClassesHolder').append(newClassCard);
+                                getClassTeacherName(data.id);
+                                getClassStudentsAmount(data.id);
+                            }
+                            // $('#resultsShow').append(msg);
+                        }
+                    });
+
+                }
+
                 window.history.replaceState(null, null, window.location.pathname + "?grade=" +<%=currentGrade%>);
             });
 
@@ -228,43 +344,21 @@
 
             <!--New class adding-->
             <div class="col-md-12 newClassAddHolder row" style="padding: 1%;">
-                <div class="col-md-2">
-                    <h4 class="text-info">GRADE <%=currentGrade%></h4>
-                    
+                <div class="col-md-2 col-sm-3">
+                    <h4 class="text-info" style="margin-left: 7%;">GRADE <%=currentGrade%></h4>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-10 col-sm-9">
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addClassModal" style="float: right;">Add a class</button> 
                 </div>
             </div>
             <!--New class adding-->
 
-
-
-            <div class="col-md-12 calssesHolder row" style="margin: auto;">
-                <% for (ClassModel singleClass : classesList) {%>
-
-                <div class="col-md-3" style="padding: 1%;">
-                    <a class="singleClassCard card" style="color: inherit; text-decoration:none;" href="./classInfo.jsp?grade=<%=currentGrade%>&classid=<%=singleClass.getId()%>">
-                        <div  style="background-color: green; text-align: center; color: white;"><h4><%=singleClass.getName()%></h4></div>
-                        <div class="card-body" style="margin-left: 2%;">
-                            <div class="row">
-                                <label>Teacher Name : </label>
-                                <p style="margin-left: 1%;"><%=getClassTeacherName(singleClass.getId())%></p>
-                            </div>
-                            <div class="row">
-                                <label>Total Students : </label>
-                                <p style="margin-left: 1%;"><%=getStudentAmountOfAClass(singleClass.getId())%></p>
-                            </div>
-                        </div>
-
-                    </a>
-
-                </div>
-
-                <%}%>
+            <!--            Class data display here-->
+            <div class="col-md-12 calssesHolder row" style="margin: auto;" id="allClassesHolder">
 
 
             </div>
+            <!--            Class data display here-->
 
         </div>
         <!--        Navigation bar-->
@@ -281,33 +375,33 @@
                     </div>
                     <div class="modal-body">
 
-                        <form action="controller/ClassController.jsp">
-                            <div class="form-group row">
-                                <div class="enrolledDateClass col-md-6">
-                                    <label for="gradeText">Grade </label>
-                                    <input class="form-control" id="gradeText" disabled value="<%=currentGrade%>">
-                                </div>
 
-                                <div class="enrolledDateClass col-md-6">
-                                    <label for="className">Class Name</label>
-                                    <input class="form-control" id="className" name="className">
-                                </div>
+                        <div class="form-group row">
+                            <div class="enrolledDateClass col-md-6">
+                                <label for="gradeText">Grade </label>
+                                <input class="form-control" id="gradeText" disabled value="<%=currentGrade%>">
                             </div>
 
+                            <div class="enrolledDateClass col-md-6">
+                                <label for="className">Class Name</label>
+                                <input class="form-control" id="modalClassName" name="className">
+                            </div>
+                        </div>
 
 
-                            <input type="hidden" name="action" value="addAClass">
-                            <input type="hidden" name="classGrade" value="<%=currentGrade%>">
 
-                            <div class=" col-md-12" style="padding-right: 8%; padding-top: 4%;">
-                                <div class="row" style="float: right;">
-                                    <button type="button" class="btn bg-teal-300" style="background-color: blueviolet; color: white; margin-right: 13px;" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn bg-teal-300" style="background-color: orangered; color: white;">Save</button>
-                                </div>
+                        <input type="hidden" name="action" value="addAClass">
+                        <input type="hidden" name="classGrade" value="<%=currentGrade%>">
 
+                        <div class=" col-md-12" style="padding-right: 8%; padding-top: 4%;">
+                            <div class="row" style="float: right;">
+                                <button type="button" id="addClassModalCloseBtn" class="btn bg-teal-300" style="background-color: blueviolet; color: white; margin-right: 13px;" data-dismiss="modal">Close</button>
+                                <button class="btn bg-teal-300" style="background-color: orangered; color: white;" id="addModalSaveBtn">Save</button>
                             </div>
 
-                        </form>
+                        </div>
+
+
 
 
                     </div>
@@ -341,9 +435,9 @@
                 }
             }
 
-     
 
-            
+
+
 
 
 

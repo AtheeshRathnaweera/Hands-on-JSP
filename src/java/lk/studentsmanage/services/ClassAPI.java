@@ -41,7 +41,7 @@ public interface ClassAPI {
     Call<List<TeacherModel>> getClassTeacher(@Path("classId") int classId);
 
     @POST("class/add")
-    Call<Boolean> saveAClass(@Body ClassModel classdto);
+    Call<ClassModel> saveAClass(@Body ClassModel classdto);
 
     @POST("addStudent")
     Call<Boolean> AddAStudent(@Body StudentModel ssdto);
