@@ -24,6 +24,10 @@ public class ClassModel {
         this.name = name;
     }
 
+    public ClassModel(Integer id) {
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }

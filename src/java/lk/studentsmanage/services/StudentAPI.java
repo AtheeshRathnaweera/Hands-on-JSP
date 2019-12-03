@@ -25,6 +25,9 @@ public interface StudentAPI {
     @GET("student/getallcount")
     Call<Long> getStudentCount();
     
+    @GET("student/getall")
+    Call<List<StudentModel>> getAllStudents();
+    
     
 
     

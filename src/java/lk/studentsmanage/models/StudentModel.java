@@ -5,7 +5,6 @@
  */
 package lk.studentsmanage.models;
 
-import java.util.Date;
 
 /**
  *
@@ -18,20 +17,22 @@ public class StudentModel {
     private String bday;
     private String address;
     private String enrolledDate;
-    private int currentClassId;
+    private ClassModel currentClass;
 
     public StudentModel() {
     }
 
-    public StudentModel(Long admissionNumber, String firstName, String lastName, String bday, String address, String enrolledDate, int currentClassId) {
+    public StudentModel(Long admissionNumber, String firstName, String lastName, String bday, String address, String enrolledDate, ClassModel currentClass) {
         this.admissionNumber = admissionNumber;
         this.firstName = firstName;
         this.lastName = lastName;
         this.bday = bday;
         this.address = address;
         this.enrolledDate = enrolledDate;
-        this.currentClassId = currentClassId;
+        this.currentClass = currentClass;
     }
+
+    
 
     public Long getAdmissionNumber() {
         return admissionNumber;
@@ -81,23 +82,20 @@ public class StudentModel {
         this.enrolledDate = enrolledDate;
     }
 
-    public int getCurrentClassId() {
-        return currentClassId;
+    public ClassModel getCurrentClass() {
+        return currentClass;
     }
 
-    public void setCurrentClassId(int currentClassId) {
-        this.currentClassId = currentClassId;
+    public void setCurrentClass(ClassModel currentClass) {
+        this.currentClass= currentClass;
     }
 
     @Override
     public String toString() {
-        return "StudentModel{" + "admissionNumber=" + admissionNumber + ", firstName=" + firstName + ", lastName=" + lastName + ", bday=" + bday + ", address=" + address + ", enrolledDate=" + enrolledDate + ", currentClassId=" + currentClassId + '}';
+        return "StudentModel{" + "admissionNumber=" + admissionNumber + ", firstName=" + firstName + ", lastName=" + lastName + ", bday=" + bday + ", address=" + address + ", enrolledDate=" + enrolledDate + ", currentClass=" + currentClass + '}';
     }
 
-   
 
-    
-    
     
     
 }

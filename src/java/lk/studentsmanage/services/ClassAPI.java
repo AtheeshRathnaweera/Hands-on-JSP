@@ -28,13 +28,16 @@ public interface ClassAPI {
     @GET("class/getClassAmount/{grade}")
     Call<Long> getClassAmountOfAGrade(@Path("grade") int grade);
     
+    @GET("class/getInfo/{classId}")
+    Call<ClassModel> getClassInfo(@Path("classId") int classId);
+    
     @GET("class/getStudentsCount/{classId}}")
     Call<Long> getStudentAmountOfAClass(@Path("classId") int classId);
 
     @GET("class/getClasses/{grade}")
     Call<List<ClassModel>> getAllClassesByGrade(@Path("grade") int grade);
 
-    @GET("classes/getStudents/{classId}")
+    @GET("class/getStudents/{classId}")
     Call<List<StudentModel>> getAllStudentsByClass(@Path("classId") int classId);
 
     @GET("class/getTeacher/{classId}")

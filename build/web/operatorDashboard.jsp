@@ -339,7 +339,7 @@
                                     </div>
 
                                     <div class="col-xs-8 col-md-8 col-sm-8 col-lg-8">
-                                        <div style="font-size:1.1vw;">Students</div>
+                                        <div style="font-size:1.1vw;">Student Users</div>
                                         <div style="font-size:3.3vw;"><%=studentsAmount%></div>
                                     </div>
                                 </div>
@@ -360,7 +360,7 @@
                                     </div>
 
                                     <div class="col-xs-8 col-sm-8 col-lg-8">
-                                        <div style="font-size:1.1vw;">Teachers</div>
+                                        <div style="font-size:1.1vw;">Teacher Users</div>
                                         <div style="font-size:3.3vw;"><%=teachersAmount%></div>
                                     </div>
                                 </div>

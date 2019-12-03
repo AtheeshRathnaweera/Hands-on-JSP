@@ -125,6 +125,14 @@
 
                 getClassesOfGrade(<%=currentGrade%>);
 
+                function displayNotification() {
+                    $("#notificationHolder").css("display", "block");
+                    $(".failedAlert").hide().fadeIn(400).delay(1700).fadeOut(800, function () {
+                        $(".failedAlert").fadeOut(1000, 500);
+                        $("#notificationHolder").css("display", "none");
+                    });
+                }
+
 
                 function getClassesOfGrade(gradeNum) {
                     //get all the classes of the grade and display in #allClassesHolder div
@@ -154,10 +162,7 @@
                                     getClassTeacherName(data[i].id);
                                     getClassStudentsAmount(data[i].id);
                                 }
-
                             }
-
-
                         }
                     });
 
@@ -196,9 +201,15 @@
                 }
 
                 $("#addModalSaveBtn").click(function () {
-                    $("#addClassModalCloseBtn").click();
-                    var className = $('#modalClassName').val();
-                    saveAClass(<%=currentGrade%>, className);
+                    var className = $('#modalClassName').val().split(' ').join('');
+                    if (className !== "") {
+                        var updatedClassName = className.charAt(0).toUpperCase() + className.slice(1);
+                        $("#addClassModalCloseBtn").click();
+                        saveAClass(<%=currentGrade%>, updatedClassName);
+                    } else {
+                        console.log("nothing to save");
+                    }
+
                 });
 
                 function saveAClass(gradeRec, className) {
@@ -242,6 +253,14 @@
 
 
         </script>
+
+        <div class="notification" id="notificationHolder" style="display: none;">
+            <div class="col-sm-3 failedAlert card m-2" style="float: right; background-color: green;"> 
+                <div class="card-body">
+                    <p style="color: white; font-size: 1.2em; margin: auto;">SignIn failed !</p> 
+                </div>
+            </div>
+        </div>
 
         <!--        Navigation bar-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark" >

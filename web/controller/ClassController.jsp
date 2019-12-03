@@ -90,7 +90,7 @@
 
         tempStudent.setBday(birthday);
         tempStudent.setEnrolledDate(enrolledDateRec);
-        tempStudent.setCurrentClassId(Integer.parseInt(clId));
+        tempStudent.setCurrentClass(new ClassModel(Integer.parseInt(clId)));
 
         System.out.println("object : " + tempStudent.toString());
 
@@ -112,6 +112,20 @@
 <%!
     ClassAPI classAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(ClassAPI.class);
 
+    public ClassModel getClassInfo(int classId){
+        Call<ClassModel> recClass = classAPI.getClassInfo(classId);
+        ClassModel result = new ClassModel();
+
+        try{
+            result = recClass.execute().body();
+        }catch(Exception e){
+            System.out.println("Exception occur in ClassController : getAllClassInfo : 122 " + e);
+        }
+
+        return result;
+
+    }
+
     public Long getAllClassCount() {
 
         Call<Long> classAmountCall = classAPI.getAllCount();
@@ -121,7 +135,7 @@
             count = classAmountCall.execute().body();
             System.out.println("counttt: "+count);
         } catch (Exception e) {
-            System.out.println("Exception occur in ClassController : getAllClassCount : 121 " + e);
+            System.out.println("Exception occur in ClassController : getAllClassCount : 136 " + e);
         }
 
         return count;
@@ -194,7 +208,7 @@
             recStudentsData = studentDataCall.execute().body();
             System.out.println("received student amount : " + recStudentsData.size());
         } catch (Exception e) {
-            System.out.println("Exception in class Controller : " + e);
+            System.out.println("Exception in class Controller : 211" + e);
         }
 
         return recStudentsData;

@@ -20,9 +20,10 @@
 
 
 <%!
+    StudentAPI studentAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(StudentAPI.class);
+    
     public StudentModel getStudentDetails(String admissionNumber) {
 
-        StudentAPI studentAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(StudentAPI.class);
 
         Call<StudentModel> studentDataCall = studentAPI.getStudentDetails(admissionNumber);
 
@@ -43,7 +44,6 @@
 
     public Long getStudentsCount() {
 
-        StudentAPI studentAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(StudentAPI.class);
         Call<Long> studentCountCall = studentAPI.getStudentCount();
 
         Long results = null;
@@ -59,7 +59,23 @@
 
     }
 
-  
+    public List<StudentModel> getAllStudents() {
+
+        Call<List<StudentModel>> studentCountCall = studentAPI.getAllStudents();
+
+        List<StudentModel> results = new ArrayList<>();
+
+        try {
+            results = studentCountCall.execute().body();
+        } catch (Exception e) {
+            System.out.println("Exception in Student controller : 71" + e);
+
+        }
+
+        return results;
+
+    }
+
 
 %>
 
