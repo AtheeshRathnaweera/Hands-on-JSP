@@ -13,11 +13,11 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
 
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
         <!--        Bootstrap needs-->
 
 
@@ -73,6 +73,66 @@
 
             }
 
+            .chip {
+                display: inline-block;
+                padding: 0 11px;
+                height: 30px;
+                font-size: 14px;
+                line-height: 29px;
+                border-radius: 25px;
+                background-color: #f1f1f1;
+                margin-right: 6px;
+            }
+
+            .chipclosebtn{
+                padding-left: 8px;
+                font-size: 15px;
+                cursor: pointer;
+
+            }
+
+            .chipclosebtn:hover {
+                color: #000;
+            }
+
+            #studentSearchInput,#assignStudentSearch {
+                background-image: url('/css/searchicon.png'); /* Add a search icon to input */
+                background-position: 10px 12px; /* Position the search icon */
+                background-repeat: no-repeat; /* Do not repeat the icon image */
+                width: 100%; /* Full-width */
+                font-size: 13px; /* Increase font-size */
+                padding: 12px 20px 12px 40px; /* Add some padding */
+                border: 1px solid #ddd; /* Add a grey border */
+                margin-bottom: 12px; /* Add some space below the input */
+            }
+
+            #studentTable,#assignStudentTable {
+                border-collapse: collapse; /* Collapse borders */
+                width: 100%; /* Full-width */
+                border: 1px solid #ddd; /* Add a grey border */
+                font-size: 14px; /* Increase font-size */
+            }
+
+            #studentTable th, #studentTable td ,#assignStudentTable th,#assignStudentTable td{
+                text-align: left; /* Left-align text */
+                padding: 12px; /* Add padding */
+            }
+
+            #studentTable tr, #assignStudentTable tr {
+                /* Add a bottom border to all table rows */
+                border-bottom: 0.5px solid #ddd;
+                background-color: white;
+            }
+
+            #studentTable tr:hover {
+                background-color: lightgrey;
+            }
+
+            #studentTable tr.header, #assignStudentTable tr.header{
+                /* Add a grey background color to the table header and on hover */
+                background-color: #f1f1f1;
+            }
+
 
 
 
@@ -88,11 +148,10 @@
     <%        UserModel userData = (UserModel) session.getAttribute("userData");
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MMM-dd");
         String status = "" + request.getParameter("status");
-        
-        String currentGrade = "" + request.getParameter("grade");
-        String currentClassId = ""+request.getParameter("classid");
 
-        System.out.println("status = " + status);
+        String currentGrade = "" + request.getParameter("grade");
+        String currentClassId = "" + request.getParameter("classid");
+        ClassModel currentClassData = getClassInfo(Integer.parseInt(currentClassId));
 
         if (userData == null || userData.getUserRole().equals("admin")) {
             System.out.println("Home page : role or userId is null ");
@@ -122,7 +181,98 @@
                     $("#notificationHolder").css("display", "none");
                 });
             <%}%>
-                window.history.replaceState(null, null, window.location.pathname + "?grade=" +<%=currentGrade%>+"&classid="+<%=currentClassId%>);
+                window.history.replaceState(null, null, window.location.pathname + "?grade=" +<%=currentGrade%> + "&classid=" +<%=currentClassId%>);
+
+                getAllStudents(<%=currentClassId%>);
+
+                $("#assignStartButton").click(function () {
+
+                    console.log("student assigning started."+admissionNumList);
+                    // $("#assignedModalCloseButton").click();
+
+
+                });
+
+
+
+
+                $("#studentAddBtn").click(function () {
+                    var admissionNum = $('#admissionNumber').val().trim();
+                    var firstName = $('#firstNameText').val().trim();
+                    var lastName = $('#lastNameText').val();
+                    var birthday = $('#studentBirthday').val();
+                    var address = $('#addressText').val();
+                    var enrolledDate = $('#studentEnrolledDate').val();
+
+                    if (admissionNum === "" && firstName === "" && lastName === "" && birthday === null && address === "" && enrolledDate === "") {
+                        console.log("not complted properly");
+                    } else {
+                        var studentAddObject = {
+                            admissionNumber: admissionNum,
+                            firstName: firstName.charAt(0).toUpperCase() + firstName.slice(1),
+                            lastName: lastName.charAt(0).toUpperCase() + lastName.slice(1),
+                            bday: birthday,
+                            address: address,
+                            enrolledDate: enrolledDate,
+                            status: "active",
+                            currentClassId: <%=currentClassId%>
+                        };
+
+                        console.log("student object : " + JSON.stringify(studentAddObject));
+                        addAStudent(JSON.stringify(studentAddObject));
+
+
+                    }
+
+
+                });
+
+                function addAStudent(studentData) {
+                    $.ajax({
+                        type: "post",
+                        contentType: 'application/json; charset=utf-8',
+                        url: "http://localhost:8090/api/studentMg/student/add",
+                        data: studentData,
+                        crossDomain: true,
+                        dataType: "json",
+                        success: function (data) {
+                            $("#studentAddModalCloseBtn").click();
+                            console.log("received : " + data);
+                            if (data.length < 0) {
+                                console.log("new student save failed.");
+                            } else {
+                                console.log("new class saved successfully.");
+                                $('#noDataRow').remove();
+                                $('#studentTable > tbody:last-child').append('<tr><td>' + data.admissionNumber + '</td><td>' + data.firstName + ' ' + data.lastName + '</td><td>' + data.bday + '</td><td>' + data.address + '</td></tr>');
+
+                            }
+                            // $('#resultsShow').append(msg);
+                        }
+                    });
+
+                }
+
+                function getAllStudents(classId) {
+                    $.ajax({
+                        type: "get",
+                        url: "http://localhost:8090/api/studentMg/class/getStudents/" + classId, //this is my servlet
+                        data: {},
+                        crossDomain: true,
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.length < 1) {
+                                $('#studentTable > tbody').append('<tr id="noDataRow"><td colspan = "4" style=" color: lightslategrey; text-align: center;">Nothing to show</td></tr>');
+                            } else {
+                                $('#noDataRow').remove();
+                                for (var i = 0; i < data.length; i++) {
+                                    $('#studentTable > tbody:last-child').append('<tr><td>' + data[i].admissionNumber + '</td><td>' + data[i].firstName + ' ' + data[i].lastName + '</td><td>' + data[i].bday + '</td><td>' + data[i].address + '</td></tr>');
+                                }
+                            }
+                        }
+                    });
+
+                }
+
             });
 
 
@@ -232,10 +382,11 @@
             <div class="col-md-12 newClassAddHolder row" style="padding: 1%;">
                 <div class="col-md-2">
                     <h4 class="text-info">GRADE <%=currentGrade%></h4>
-                    
+                    <h6 class="text-primary"> <%=currentClassData.getName().toUpperCase()%></h6>         
                 </div>
                 <div class="col-md-10">
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addClassModal" style="float: right;">Add a student</button> 
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addAnExistingStudentModal" style="float: right; margin-left: 5px;">Add an existing student</button> 
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addStudentModal" style="float: right;">Add a new student</button> 
                 </div>
             </div>
             <!--New class adding-->
@@ -243,12 +394,28 @@
 
 
             <div class="col-md-12 calssesHolder row" style="margin: auto;">
-                <% for (ClassModel singleClass : classesList) {%>
 
 
+                <div class="col-md-12">
+                    <input style="background-image: url('assets/images/searchIcon.png');" type="text" id="studentSearchInput" onkeyup="searchFunction({inputId: 'studentSearchInput', table: 'studentTable'})" placeholder="Search for students..">
+                    <div style="height: 77%; overflow-y: auto">
+                        <table id="studentTable">
+                            <thead>
+                                <tr class="header">
+                                    <th style="width:20%;">Admission Number</th>
+                                    <th style="width:30%;">Name</th>
+                                    <th style="width:20%;">Birthday</th>
+                                    <th style="width:30%;">Address</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!--                                    students of this class will be display here-->
+                            </tbody>
+                        </table> 
+                    </div>
+                </div>
 
 
-                <%}%>
 
 
             </div>
@@ -256,64 +423,161 @@
         </div>
         <!--        Navigation bar-->
 
-        <!--        Add a class modal-->
-        <div class="modal fade" id="addClassModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal fade" id="addStudentModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header bg-dark" >
-                        <h5 class="modal-title" id="exampleModalLongTitle" style="color: white;" >Add a new class</h5>
+                        <h5 class="modal-title" id="exampleModalLongTitle" style="color: white;">Add a new student</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
 
-                        <form action="controller/ClassController.jsp">
-                            <div class="form-group row">
-                                <div class="enrolledDateClass col-md-6">
-                                    <label for="gradeText">Grade </label>
-                                    <input class="form-control" id="gradeText" disabled value="<%=currentGrade%>">
-                                </div>
+                        <form>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="gradeText">Grade </label>
+                                        <input class="form-control" id="gradeText" disabled value="<%=currentGrade%>">
+                                    </div>
 
-                                <div class="enrolledDateClass col-md-6">
-                                    <label for="className">Class Name</label>
-                                    <input class="form-control" id="className" name="className">
+                                    <div class="col-md-6">
+                                        <label for="className">Class Name</label>
+                                        <input class="form-control" id="className" disabled value="<%=currentClassData.getName()%>" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label for="admissionNumberText">Admission Number</label>
+                                    <input class="form-control" id="admissionNumber" type="number" name="admissionNumber" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label for="firstNameText">First Name</label>
+                                    <input class="form-control" id="firstNameText" name="firstName" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label for="lastNameText">Last Name</label>
+                                    <input class="form-control" id="lastNameText" name="lastName" required>
                                 </div>
                             </div>
 
 
 
-                            <input type="hidden" name="action" value="addAClass">
-                            <input type="hidden" name="classGrade" value="<%=currentGrade%>">
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label for="addressText">Address</label>
+                                    <input class="form-control" id="addressText" name="address" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group row"> <!-- Date input -->
+
+                                <div class=" holder col-md-6">
+                                    <label class="control-label" for="date">Birthday</label>
+                                    <input class="form-control" type="date"  name="bDate" placeholder="yyyy-MM-dd" type="text" required id="studentBirthday"/>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="control-label" for="date">Enrolled date</label>
+                                    <input class="form-control" type="date"  name="eDate" placeholder="yyyy-MM-dd" type="text" required id="studentEnrolledDate"/>
+                                </div>
+                            </div>
+
 
                             <div class=" col-md-12" style="padding-right: 8%; padding-top: 4%;">
                                 <div class="row" style="float: right;">
-                                    <button type="button" class="btn bg-teal-300" style="background-color: blueviolet; color: white; margin-right: 13px;" data-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn bg-teal-300" style="background-color: orangered; color: white;">Save</button>
+                                    <button type="button" class="btn bg-teal-300" style="background-color: blueviolet; color: white; margin-right: 13px;" data-dismiss="modal" id="studentAddModalCloseBtn">Close</button>
+                                    <button type="button" class="btn bg-teal-300" style="background-color: orangered; color: white;" id="studentAddBtn">Save</button>
                                 </div>
 
                             </div>
 
                         </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="addAnExistingStudentModal"  role="dialog" aria-hidden="true" style="height: 700px;">
+            <div class="modal-dialog modal-dialog-centered modal-xl" role="document" >
+                <div class="modal-content">
+                    <div class="modal-header bg-dark" >
+                        <h5 class="modal-title" id="exampleModalLongTitle" style="color: white;">Select students</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;" id="assignedModalCloseButton">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" >
+                        <div style="margin-bottom: 10px; color: lightgray;">*If already assigned student is selected, the student will be automatically removed from the current class and added to this class.</div>
+                        <div class="row">
+                            <div class="col-md-10" id="admChipHolder">
+
+                            </div>
+                            <div class="col-md-2" style="display: flex; justify-content: center;">
+                                <button class="btn btn-info"  id="assignStartButton">Assigned selected</button>
+                            </div>
+                        </div>
+                        <input  style="background-image: url('assets/images/searchIcon.png'); margin-top: 8px;" type="text" id="assignStudentSearch" onkeyup="searchFunction({inputId: 'assignStudentSearch', table: 'assignStudentTable'})" placeholder="Search by admission number...">
+                        <div style="height: 90%; overflow-y: auto">
+                            <table id="assignStudentTable">
+                                <thead>
+                                    <tr class="header">
+                                        <th style="width:20%; text-align: center;">Admission Number</th>
+                                        <th style="width:40%; text-align: center;">Name</th>
+                                        <th style="width:20%;">Current Class</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <%
+                                        List<StudentModel> allStudents = getAllStudents();
+
+                                        if (allStudents != null) {
+                                            for (StudentModel singleStudent : allStudents) {
+                                                if (singleStudent.getCurrentClass().getId() != Integer.parseInt(currentClassId)) {
+
+                                    %>
+                                    <tr style="cursor: pointer; background-color: <%if (singleStudent.getCurrentClass().getGrade() == 0) {%>lightyellow;<%}%>" onclick="studentSelectChip(<%=singleStudent.getAdmissionNumber()%>)">
+
+                                        <td ><%=singleStudent.getAdmissionNumber()%></td>
+                                        <td><%=singleStudent.getFirstName() + " " + singleStudent.getLastName()%></td>
+                                        <td><%if (singleStudent.getCurrentClass().getGrade() != 0) {%>
+                                            <%=singleStudent.getCurrentClass().getGrade() + " - " + singleStudent.getCurrentClass().getName()%>
+                                            <%} else {%>
+                                            Not assigned<%}%>
+                                        </td>
+                                    </tr>                              
+                                    <%}
+                                        }
+                                    } else {
+                                    %>
+                                    <tr id="noDataRow">
+                                        <td colspan = "4" style=" color: lightslategrey; text-align: center;">Nothing to show</td>
+                                    </tr>
+                                    <%}%>
+                                </tbody>
+                            </table> 
+                        </div>
+
 
 
                     </div>
-
-
                 </div>
-
-
             </div>
-
         </div>
-        <!--        Add a class modal-->
 
         <footer class="container-fluid text-center">
             <p>Footer Text</p>
         </footer>
-
-
-
 
         <script>
 
@@ -328,149 +592,38 @@
                 }
             }
 
-            function someFunc(arg) {
+            var admissionNumList = []; //maximum 10 students at once
 
-
-                const div = document.createElement('div-user');
-
-                div.innerHTML = `
-                        <div class="card">
-                        <div class="card-body">
-                        <h5 class="card-title">User Details</h5>
-                            <div class="row" style="margin-bottom: 10px;">
-                                <label class="col-md-4">User ID</label>
-                                <input class="col-md-8" disabled value="` + arg.id + `"></input>
-                            </div>
-                            
-                                <div class="row">
-                                <label class="col-md-4">Role</label>
-                                <input class="col-md-8" disabled value="` + arg.role + `"></input>
-                        </div>                                 
-                        </div>
-                        </div>
-                                                    `;
-
-                const parentT = document.getElementById(arg.sectionId);
-                parentT.innerHTML = "";
-                parentT.appendChild(div);
-
-
-            }
-
-            function operatorFunc(arg) {
-
-                const div = document.createElement('div-user');
-
-                var checkedActive = "";
-                var checkedBlocked = "";
-                var checkedRetired = "";
-
-                //check the radio button according to the user current status
-                if (arg.status === "active") {
-                    checkedActive = "checked";
-                } else if (arg.status === "blocked") {
-                    checkedBlocked = "checked";
-                } else if (arg.status === "retired") {
-                    checkedRetired = "checked";
+            function removeAChip(recAdNum) {
+                var index = admissionNumList.indexOf(recAdNum);
+                if (index > -1) {
+                    admissionNumList.splice(index, 1); //removing the id from the list
                 }
-
-                div.innerHTML = `
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">User Details</h5>
-                                    <div class="row" style="margin-bottom: 10px;">
-                                        <label class="col-md-4">Nic</label>
-                                        <input class="col-md-8" disabled value="` + arg.nic + `"></input>
-                                    </div>
-                                    
-                                    <div class="row" style="margin-bottom: 10px;">
-                                            <label class="col-md-4">Name</label>
-                                            <input class="col-md-8" disabled value="` + arg.name + `"></input>
-                                    </div> 
-                    
-                                    <div class="row" style="margin-bottom: 10px;">
-                                        <label class="col-md-4">Birthday</label>
-                                        <input class="col-md-8" disabled value="` + arg.birthday + `"></input>
-                                    </div> 
-                        
-                                    <div class="row" style="margin-bottom: 10px;">
-                                        <label class="col-md-4">Address</label>
-                                        <input class="col-md-8" disabled value="` + arg.address + `"></input>
-                                    </div> 
-                                    
-                                    <div class="row" style="margin-bottom: 10px;">
-                                        <label class="col-md-4">Enrolled Date</label>
-                                        <input class="col-md-8" disabled value="` + arg.enrolledDate + `"></input>
-                                    </div> 
-                                
-                                    <div class="row">
-                                        <label class="col-md-4">Status</label>
-                                        <input class="col-md-8" disabled value="` + arg.status + `"></input>
-                                    </div>   
-                        
-                                    <div class="row " style="width=100%; display:flex;">
-                                        <button class="btn btn-danger" style="margin-left: auto; margin-top:3%;" data-toggle="modal" data-target="#operatorAccessControl">Access Control</button>
-                                    </div>
-                            </div>                                
-                        </div>
-                                    
-                                    <div class="modal fade" id="operatorAccessControl" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header bg-dark" >
-                                <h5 class="modal-title" id="exampleModalLongTitle" style="color: white;">Operator Access Control</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                 
-                                    <form action="controller/AdminController.jsp"> 
-        
-                                        <div class="form-group">
-                                            <div class="row" style="margin: 0 auto;">
-                                                <div class="col-sm-1"></div>
-                                                <div class="col-sm-3">
-                                                    <input type="radio" name="status" value="active" ` + checkedActive + `> Active
-                                                </div>
-                                                <div class="col-sm-1"></div>
-                                                <div class="col-sm-3">
-                                                    <input type="radio" name="status" value="blocked" ` + checkedBlocked + `> Blocked
-                                                </div>
-                                                <div class="col-sm-1"></div>
-                                                <div class="col-sm-3">
-                                                    <input type="radio" name="status" value="retired" ` + checkedRetired + `> Retired
-                                                </div>
-                                            </div>
-                                        </div>
-        
-                                        
-                                        <input type="hidden" name="nic" value="` + arg.nic + `">
-                                        <input type="hidden" name="action" value="accessOperator">
-
-                                        <div style="margin-top:4%; " class="form-group">
-                                            <div class="row mr-1" style="float: right;">
-                                                <button type="submit" class="btn btn-secondary mr-2">Update</button>
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                 
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-                    
-                      `;
-
-                const parentT = document.getElementById('operator_data_section');
-                parentT.innerHTML = "";
-                parentT.appendChild(div);
-
+                printChips();
 
             }
+            
+            function printChips(){//print all the chips
+                $("#admChipHolder").html("");//clear exist chips
+                for(var i=0;i<admissionNumList.length;i++){
+                    $("#admChipHolder").append("<div class='chip'>" + admissionNumList[i] + "<span class='chipclosebtn' id='chipclosebtn"+admissionNumList[i]+"' onclick='removeAChip(" + admissionNumList[i] + ")'>&times;</span></div>");
+                }
+            }
 
+            function studentSelectChip(recAdNum) {
+                //create a chip to show the selected student id
+                var index = admissionNumList.indexOf(recAdNum);
+
+                if (admissionNumList.length < 6 && index === -1) {
+                    //index is -1 ; new chip ;
+                    admissionNumList.push(recAdNum);
+                    printChips();
+                    //onclick='this.parentElement.style.display =`none`'
+                   // $("#admChipHolder").append("<div class='chip'>" + recAdNum + "<span class='chipclosebtn' id='chipclosebtn"+recAdNum+"' onclick='removeAChip(" + recAdNum + ")'>&times;</span></div>");
+                } else {
+                    console.log("exist chip");
+                }
+            }
 
             function searchFunction(args) {
                 var input, filter, table, tr, td, i, txtValue;
