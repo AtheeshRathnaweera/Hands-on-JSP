@@ -25,6 +25,9 @@ public interface ClassAPI {
     @GET("class/allCount")
     Call<Long> getAllCount();
     
+    @GET("class/getAll")
+    Call<List<ClassModel>> getAllClasses();
+    
     @GET("class/getClassAmount/{grade}")
     Call<Long> getClassAmountOfAGrade(@Path("grade") int grade);
     

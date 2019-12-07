@@ -33,7 +33,7 @@
     String clName = "" + request.getParameter("className");
 
     if (actionCl.equals("addAClass")) {
-        
+
         System.out.println("add a new class method started.");
 
         ClassModel tempClass = new ClassModel();
@@ -49,11 +49,11 @@
 
         if (ss != null) {
             session.setAttribute("save_status", "1");
-            response.sendRedirect("../classPage.jsp?grade=" + clGrade+"&status=saved");
+            response.sendRedirect("../classPage.jsp?grade=" + clGrade + "&status=saved");
 
         } else {
             session.setAttribute("save_status", "0");
-            response.sendRedirect("../classPage.jsp?grade=" + clGrade+"&status=saveFailed");
+            response.sendRedirect("../classPage.jsp?grade=" + clGrade + "&status=saveFailed");
         }
 
     } else if (actionCl.equals("addAStudent")) {
@@ -112,14 +112,28 @@
 <%!
     ClassAPI classAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(ClassAPI.class);
 
-    public ClassModel getClassInfo(int classId){
+    public List<ClassModel> getAllClasses() {
+        Call<List<ClassModel>> recClassesListReq = classAPI.getAllClasses();
+        List<ClassModel> resultList = new ArrayList<>();
+
+        try {
+            resultList = recClassesListReq.execute().body();
+        } catch (Exception e) {
+            System.out.println("Exception occur in ClassController : getAllClassInfo : 122 " + e);
+        }
+
+        return resultList;
+
+    }
+
+    public ClassModel getClassInfo(int classId) {
         Call<ClassModel> recClass = classAPI.getClassInfo(classId);
         ClassModel result = new ClassModel();
 
-        try{
+        try {
             result = recClass.execute().body();
-        }catch(Exception e){
-            System.out.println("Exception occur in ClassController : getAllClassInfo : 122 " + e);
+        } catch (Exception e) {
+            System.out.println("Exception occur in ClassController : getAllClassInfo : 136 " + e);
         }
 
         return result;
@@ -133,7 +147,7 @@
 
         try {
             count = classAmountCall.execute().body();
-            System.out.println("counttt: "+count);
+            System.out.println("counttt: " + count);
         } catch (Exception e) {
             System.out.println("Exception occur in ClassController : getAllClassCount : 136 " + e);
         }
@@ -166,12 +180,12 @@
 
         try {
             count = classAmountCall.execute().body();
-            System.out.println("amount of classes : "+count);
+            System.out.println("amount of classes : " + count);
         } catch (Exception e) {
             System.out.println("Exception occur in ClassController : getAllClassCount : 121 " + e);
         }
 
-        if(count == null){
+        if (count == null) {
             return 0;
         }
 
@@ -249,7 +263,7 @@
 
             }
             System.out.println("received teacher data : " + recTeacherData.toString());
-            
+
         } catch (Exception e) {
             System.out.println("Exception in class Controller : " + e);
         }

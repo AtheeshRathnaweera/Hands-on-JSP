@@ -5,6 +5,7 @@
  */
 package lk.studentsmanage.services;
 
+import java.util.List;
 import lk.studentsmanage.models.TeacherModel;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -20,6 +21,9 @@ public interface TeacherAPI {
     Call<TeacherModel> getTeacherDetails(@Path("teacherNic") String teacherNic);
     
     @GET("teacher/getallcount")
-    Call<Long> getTeacherCount();
+    Call<Long> getTeachersCount();
+    
+    @GET("teacher/getall")
+    Call<List<TeacherModel>> getAllTeachers();
     
 }

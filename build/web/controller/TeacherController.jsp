@@ -20,9 +20,9 @@
 
 
 <%!
-    public TeacherModel getTeacherDetails(String nic) {
+    TeacherAPI teacherAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(TeacherAPI.class);
 
-        TeacherAPI teacherAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(TeacherAPI.class);
+    public TeacherModel getTeacherDetails(String nic) {
 
         Call<TeacherModel> teacherDataCall = teacherAPI.getTeacherDetails(nic);
 
@@ -39,24 +39,36 @@
 
     }
 
-    public Long getTeachersCount() {
+    public Long getTeachersCountOfTheSchool() {
 
-        TeacherAPI teacherAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(TeacherAPI.class);
-        Call<Long> teacherCountCall = teacherAPI.getTeacherCount();
+        Call<Long> teacherCountCall = teacherAPI.getTeachersCount();
 
         Long results = null;
 
         try {
             results = teacherCountCall.execute().body();
         } catch (Exception e) {
-            System.out.println("Exception in Teacher controller : getTeachersCount " + e);
+            System.out.println("Exception in Teacher controller : getTeachersCount 51" + e);
         }
 
         return results;
 
     }
 
- 
+    public List<TeacherModel> getAllTeachers() {
+
+        Call<List<TeacherModel>> allTeachersCall = teacherAPI.getAllTeachers();
+
+        List<TeacherModel> results = new ArrayList<>();
+
+        try {
+            results = allTeachersCall.execute().body();
+        } catch (Exception e) {
+            System.out.println("Exception in Teacher controller : getAllTeachers 67 " + e);
+        }
+
+        return results;
+    }
 
 
 %>

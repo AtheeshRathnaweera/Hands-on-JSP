@@ -42,7 +42,7 @@
 
     }
 
-    public Long getStudentsCount() {
+    public Long getAllStudentsCountOfTheSchool() {
 
         Call<Long> studentCountCall = studentAPI.getStudentCount();
 
@@ -50,6 +50,7 @@
 
         try {
             results = studentCountCall.execute().body();
+            System.out.println("student : "+results);
         } catch (Exception e) {
             System.out.println("Exception in Student controller : " + e);
 

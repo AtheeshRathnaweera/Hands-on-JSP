@@ -19,12 +19,12 @@ public class TeacherModel {
     private Long telephoneNumber;
     private String status;
     private String gender;
-    private Integer currentClassId;
+    private ClassModel currentClass;
 
     public TeacherModel() {
     }
 
-    public TeacherModel(String nic, String firstName, String lastName, String address, Long telephoneNumber, String status, String gender, Integer currentClassId) {
+    public TeacherModel(String nic, String firstName, String lastName, String address, Long telephoneNumber, String status, String gender, ClassModel currentClass) {
         this.nic = nic;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -32,12 +32,9 @@ public class TeacherModel {
         this.telephoneNumber = telephoneNumber;
         this.status = status;
         this.gender = gender;
-        this.currentClassId = currentClassId;
+        this.currentClass = currentClass;
     }
 
-  
-
-  
     public String getNic() {
         return nic;
     }
@@ -86,12 +83,12 @@ public class TeacherModel {
         this.status = status;
     }
 
-    public Integer getCurrentClassId() {
-        return currentClassId;
+    public ClassModel getCurrentClass() {
+        return currentClass;
     }
 
-    public void setCurrentClassId(Integer currentClassId) {
-        this.currentClassId = currentClassId;
+    public void setCurrentClass(ClassModel currentClass) {
+        this.currentClass = currentClass;
     }
 
     public String getGender() {
@@ -104,12 +101,7 @@ public class TeacherModel {
 
     @Override
     public String toString() {
-        return "TeacherModel{" + "nic=" + nic + ", firstName=" + firstName + ", lastName=" + lastName + ", address=" + address + ", telephoneNumber=" + telephoneNumber + ", status=" + status + ", gender=" + gender + ", currentClassId=" + currentClassId + '}';
+        return "TeacherModel{" + "nic=" + nic + ", firstName=" + firstName + ", lastName=" + lastName + ", address=" + address + ", telephoneNumber=" + telephoneNumber + ", status=" + status + ", gender=" + gender + ", currentClassId=" + currentClass + '}';
     }
-
-    
-
-    
-    
     
 }

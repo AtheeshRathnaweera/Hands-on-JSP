@@ -95,7 +95,7 @@
                 color: #000;
             }
 
-            #studentSearchInput,#assignStudentSearch {
+            #studentSearchInput, #assignStudentSearch, #assignTeacherSearch {
                 background-image: url('/css/searchicon.png'); /* Add a search icon to input */
                 background-position: 10px 12px; /* Position the search icon */
                 background-repeat: no-repeat; /* Do not repeat the icon image */
@@ -106,29 +106,29 @@
                 margin-bottom: 12px; /* Add some space below the input */
             }
 
-            #studentTable,#assignStudentTable {
+            #studentTable,#assignStudentTable,#assignTeacherTable {
                 border-collapse: collapse; /* Collapse borders */
                 width: 100%; /* Full-width */
                 border: 1px solid #ddd; /* Add a grey border */
                 font-size: 14px; /* Increase font-size */
             }
 
-            #studentTable th, #studentTable td ,#assignStudentTable th,#assignStudentTable td{
+            #studentTable th, #studentTable td ,#assignStudentTable th,#assignStudentTable td,#assignTeacherTable th,#assignTeacherTable td{
                 text-align: left; /* Left-align text */
                 padding: 12px; /* Add padding */
             }
 
-            #studentTable tr, #assignStudentTable tr {
+            #studentTable tr, #assignStudentTable tr, #assignTeacherTable tr {
                 /* Add a bottom border to all table rows */
                 border-bottom: 0.5px solid #ddd;
                 background-color: white;
             }
 
-            #studentTable tr:hover {
+            #studentTable tr:hover, #assignTeacherTable tr:hover {
                 background-color: lightgrey;
             }
 
-            #studentTable tr.header, #assignStudentTable tr.header{
+            #studentTable tr.header, #assignStudentTable tr.header, #assignTeacherTable tr.header{
                 /* Add a grey background color to the table header and on hover */
                 background-color: #f1f1f1;
             }
@@ -161,6 +161,22 @@
 
         List<ClassModel> classesList = getAllClassesByGrade(Integer.parseInt(currentGrade));
         List<StudentModel> studentsList = getAllStudentsOfAClass(Integer.parseInt(currentClassId));
+        int studentsAmount = studentsList.size();
+
+        List<TeacherModel> teacherData = getClassTeacher(Integer.parseInt(currentClassId));
+        TeacherModel classTeacherData = new TeacherModel();
+
+        if (teacherData.size() > 0) {
+            System.out.println("class teacher found.");
+
+            classTeacherData = teacherData.get(0);
+        } else {
+            System.out.println("class teacher not found.");
+
+            classTeacherData.setNic("not found");
+            classTeacherData.setFirstName("Not");
+            classTeacherData.setLastName("Assigned");
+        }
 
     %>
 
@@ -183,18 +199,8 @@
             <%}%>
                 window.history.replaceState(null, null, window.location.pathname + "?grade=" +<%=currentGrade%> + "&classid=" +<%=currentClassId%>);
 
+
                 getAllStudents(<%=currentClassId%>);
-
-                $("#assignStartButton").click(function () {
-
-                    console.log("student assigning started."+admissionNumList);
-                    // $("#assignedModalCloseButton").click();
-
-
-                });
-
-
-
 
                 $("#studentAddBtn").click(function () {
                     var admissionNum = $('#admissionNumber').val().trim();
@@ -220,8 +226,6 @@
 
                         console.log("student object : " + JSON.stringify(studentAddObject));
                         addAStudent(JSON.stringify(studentAddObject));
-
-
                     }
 
 
@@ -252,6 +256,8 @@
 
                 }
 
+
+
                 function getAllStudents(classId) {
                     $.ajax({
                         type: "get",
@@ -261,17 +267,20 @@
                         dataType: "json",
                         success: function (data) {
                             if (data.length < 1) {
-                                $('#studentTable > tbody').append('<tr id="noDataRow"><td colspan = "4" style=" color: lightslategrey; text-align: center;">Nothing to show</td></tr>');
+                                $('#studentTable > tbody').append('<tr id="noDataRow"><td colspan = "5" style=" color: lightslategrey; text-align: center;">Nothing to show</td></tr>');
                             } else {
                                 $('#noDataRow').remove();
                                 for (var i = 0; i < data.length; i++) {
-                                    $('#studentTable > tbody:last-child').append('<tr><td>' + data[i].admissionNumber + '</td><td>' + data[i].firstName + ' ' + data[i].lastName + '</td><td>' + data[i].bday + '</td><td>' + data[i].address + '</td></tr>');
+                                    $('#studentTable > tbody:last-child').append('<tr><td><input type="checkbox" class="checkbox" value="' + data[i].admissionNumber + '"></td><td>' + data[i].admissionNumber + '</td><td>' + data[i].firstName + ' ' + data[i].lastName + '</td><td>' + data[i].bday + '</td><td>' + data[i].address + '</td></tr>');
                                 }
                             }
                         }
                     });
 
                 }
+
+
+
 
             });
 
@@ -307,6 +316,7 @@
             </div>
         </nav>
         <!-- Navigation bar-->
+
 
         <!-- User profile Modal -->
         <div class="modal fade" id="userProfileView" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -378,15 +388,34 @@
             <!--            Notification-->
 
 
+
             <!--New class adding-->
             <div class="col-md-12 newClassAddHolder row" style="padding: 1%;">
-                <div class="col-md-2">
+                <div class="col-md-4">
                     <h4 class="text-info">GRADE <%=currentGrade%></h4>
-                    <h6 class="text-primary"> <%=currentClassData.getName().toUpperCase()%></h6>         
+                    <h5 class="text-primary"> <%=currentClassData.getName().toUpperCase()%></h5>  
+                    <h6><span>Class Teacher : </span><span style="font-style: italic; color: gray; cursor: pointer;" id="classTeacherName"><%=classTeacherData.getFirstName() + " " + classTeacherData.getLastName()%></span></h6>
+                    <h6><span>Total Students : </span><span style="font-style: italic; color: gray;"><%=studentsAmount%></span></h6>
                 </div>
-                <div class="col-md-10">
-                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#addAnExistingStudentModal" style="float: right; margin-left: 5px;">Add an existing student</button> 
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addStudentModal" style="float: right;">Add a new student</button> 
+                <div class="col-md-8">
+                    <div class="row" style="float: right;">
+                        <button type="button" class="btn btn-danger" id="removeSelectedStudentActionBtn" style="margin-right: 10px;">
+                            Remove students
+                        </button>
+                        <div class="dropdown" >
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                Options
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <div class="dropdown-header">Students</div> 
+                                <button class="dropdown-item"  data-toggle="modal" data-target="#addStudentModal">Add a new student</button>
+                                <button class="dropdown-item" data-toggle="modal" data-target="#addAnExistingStudentModal">Add an existing student</button>
+                                <div class="dropdown-divider"></div>
+                                <div class="dropdown-header">Class teacher</div> 
+                                <button class="dropdown-item" data-toggle="modal" data-target="#addAnExistingTeacherModal">Assign a teacher</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!--New class adding-->
@@ -397,11 +426,12 @@
 
 
                 <div class="col-md-12">
-                    <input style="background-image: url('assets/images/searchIcon.png');" type="text" id="studentSearchInput" onkeyup="searchFunction({inputId: 'studentSearchInput', table: 'studentTable'})" placeholder="Search for students..">
-                    <div style="height: 77%; overflow-y: auto">
+                    <input style="background-image: url('assets/images/searchIcon.png');" type="text" id="studentSearchInput" onkeyup="searchFunction({inputId: 'studentSearchInput', table: 'studentTable'})" placeholder="Search by admission number..">
+                    <div style="height: 95%; overflow-y: auto">
                         <table id="studentTable">
                             <thead>
                                 <tr class="header">
+                                    <th><input type="checkbox" id='checkAllStudents' value="all"></th>
                                     <th style="width:20%;">Admission Number</th>
                                     <th style="width:30%;">Name</th>
                                     <th style="width:20%;">Birthday</th>
@@ -423,11 +453,12 @@
         </div>
         <!--        Navigation bar-->
 
+        <!--                                    add new student modal-->
         <div class="modal fade" id="addStudentModal" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header bg-dark" >
-                        <h5 class="modal-title" id="exampleModalLongTitle" style="color: white;">Add a new student</h5>
+                        <h5 class="modal-title" style="color: white;">Add a new student</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -506,17 +537,21 @@
                 </div>
             </div>
         </div>
+        <!--                                    add new student modal-->
 
-        <div class="modal fade" id="addAnExistingStudentModal"  role="dialog" aria-hidden="true" style="height: 700px;">
+
+
+        <!--        add existing student modal-->
+        <div class="modal fade" id="addAnExistingStudentModal"  role="dialog" aria-hidden="true" style="max-height: 90%;">
             <div class="modal-dialog modal-dialog-centered modal-xl" role="document" >
-                <div class="modal-content">
+                <div class="modal-content" >
                     <div class="modal-header bg-dark" >
                         <h5 class="modal-title" id="exampleModalLongTitle" style="color: white;">Select students</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;" id="assignedModalCloseButton">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body" >
+                    <div class="modal-body" style="height: 20%;">
                         <div style="margin-bottom: 10px; color: lightgray;">*If already assigned student is selected, the student will be automatically removed from the current class and added to this class.</div>
                         <div class="row">
                             <div class="col-md-10" id="admChipHolder">
@@ -527,7 +562,7 @@
                             </div>
                         </div>
                         <input  style="background-image: url('assets/images/searchIcon.png'); margin-top: 8px;" type="text" id="assignStudentSearch" onkeyup="searchFunction({inputId: 'assignStudentSearch', table: 'assignStudentTable'})" placeholder="Search by admission number...">
-                        <div style="height: 90%; overflow-y: auto">
+                        <div style="max-height: 350px; overflow-y: auto">
                             <table id="assignStudentTable">
                                 <thead>
                                     <tr class="header">
@@ -567,20 +602,225 @@
                                 </tbody>
                             </table> 
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--        add existing student modal-->
 
 
+
+        <!--                                Assign a teacher modal-->
+        <div class="modal fade" id="addAnExistingTeacherModal"  role="dialog" aria-hidden="true" style="max-height: 90%;">
+            <div class="modal-dialog modal-dialog-centered modal-xl" role="document" >
+                <div class="modal-content" >
+                    <div class="modal-header bg-dark" >
+                        <h5 class="modal-title" id="exampleModalLongTitle" style="color: white;">Assign a teacher</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;" id="assignedTeacherModalCloseButton">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="height: 20%;">
+                        <div style="margin-bottom: 10px; color: lightgray;">*If already assigned teacher is selected, the teacher will be automatically removed from the current class and added to this class.</div>
+                        <div class="row">
+                            <div class="col-md-10" id="teacherChipHolder">
+
+                            </div>
+                            <div class="col-md-2" style="display: flex; justify-content: center;">
+                                <button class="btn btn-info"  id="assignTeacherStartButton">Assigned selected</button>
+                            </div>
+                        </div>
+                        <input  style="background-image: url('assets/images/searchIcon.png'); margin-top: 8px;" type="text" id="assignTeacherSearch" onkeyup="searchFunction({inputId: 'assignTeacherSearch', table: 'assignTeacherTable'})" placeholder="Search by NIC...">
+                        <div style="max-height: 350px; overflow-y: auto">
+                            <table id="assignTeacherTable">
+                                <thead>
+                                    <tr class="header">
+                                        <th style="width:20%; text-align: center;">NIC</th>
+                                        <th style="width:40%; text-align: center;">Name</th>
+                                        <th style="width:20%;">Current Class</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <%
+                                        List<TeacherModel> allTeachers = getAllTeachers();
+
+                                        if (allTeachers != null) {
+                                            for (TeacherModel singleTeacher : allTeachers) {
+                                                if (singleTeacher.getCurrentClass().getId() != Integer.parseInt(currentClassId)) {
+
+                                    %>
+                                    <tr style="cursor: pointer; background-color: <%if (singleTeacher.getCurrentClass().getGrade() == 0) {%>lightyellow;<%}%>" onclick="teacherSelectChip('<%=singleTeacher.getNic()%>', '<%=singleTeacher.getFirstName() + " " + singleTeacher.getLastName()%>')">
+
+                                        <td ><%=singleTeacher.getNic()%></td>
+                                        <td><%=singleTeacher.getFirstName() + " " + singleTeacher.getLastName()%></td>
+                                        <td><%if (singleTeacher.getCurrentClass().getGrade() != 0) {%>
+                                            <%=singleTeacher.getCurrentClass().getGrade() + " - " + singleTeacher.getCurrentClass().getName()%>
+                                            <%} else {%>
+                                            Not assigned<%}%>
+                                        </td>
+                                    </tr>                              
+                                    <%}
+                                        }
+                                    } else {
+                                    %>
+                                    <tr id="noDataRow">
+                                        <td colspan = "4" style=" color: lightslategrey; text-align: center;">Nothing to show</td>
+                                    </tr>
+                                    <%}%>
+                                </tbody>
+                            </table> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--                                Assign a teacher modal-->
+
+
+
+        <div class="modal fade"   role="dialog" aria-hidden="true" style="max-height: 90%;" id="classTeacherDetailsModal">
+            <div class="modal-dialog modal-dialog-centered" role="document"  >
+                <div class="modal-content" >
+                    <div class="modal-header bg-dark" >
+                        <h5 class="modal-title" id="exampleModalLongTitle" style="color: white;">Class Teacher Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color:white;" id="assignedTeacherModalCloseButton">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="height: 20%;">
+                        <%if (classTeacherData.getNic() != "not found") {%>
+                        <form>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label>NIC </label>
+                                        <input class="form-control" disabled value="<%=classTeacherData.getNic()%>">
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label>Assigned Class</label>
+                                        <input class="form-control" disabled value="<%=classTeacherData.getCurrentClass().getGrade() + " " + classTeacherData.getCurrentClass().getName()%>" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label>Name</label>
+                                    <input class="form-control" value="<%=classTeacherData.getFirstName() + " " + classTeacherData.getLastName()%>" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label>Address</label>
+                                    <input class="form-control" value="<%=classTeacherData.getAddress()%>" disabled>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group row"> <!-- Date input -->
+
+                                <div class=" holder col-md-6">
+                                    <label>Contact Number</label>
+                                    <input class="form-control" value="<%=classTeacherData.getTelephoneNumber()%>" disabled>
+                                </div>
+
+                                <div class=" holder col-md-6">
+                                    <label>Gender</label>
+                                    <input class="form-control" value="<%if (classTeacherData.getGender().equals("M")) {%>Male<%} else {%>Female<%}%>" disabled>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <div class="col-md-12">
+                                    <label>Status</label>
+                                    <input class="form-control" value="<%=classTeacherData.getStatus()%>" disabled>
+                                </div>
+                            </div>
+
+
+
+                            <div class=" col-md-12" style="padding-right: 8%; padding-top: 4%;">
+                                <div class="row" style="float: right;">
+                                    <button type="button" class="btn bg-teal-300" style="background-color: blueviolet; color: white; margin-right: 13px;" data-dismiss="modal" id="studentAddModalCloseBtn">Close</button>
+                                </div>
+
+                            </div>
+
+                        </form>
+
+                        <%}%>
 
                     </div>
                 </div>
             </div>
         </div>
 
+        <button id="teacherDetailsViewButton" data-toggle="modal" data-target="#classTeacherDetailsModal" hidden>teacher details view button</button>
+
+
         <footer class="container-fluid text-center">
             <p>Footer Text</p>
         </footer>
 
-        <script>
+        <script type="text/javascript">
 
+            var checkedStudentsAdList = [];
+            $("#checkAllStudents").prop("checked", false);
+
+            $("#checkAllStudents").change(function () {
+                var checked = $(this).is(':checked');
+                if (checked) {
+                    $(".checkbox").each(function () {
+                        $(this).prop("checked", true);
+                        var boxValue = $(this).val();
+                        checkedStudentsAdList.push(boxValue);
+                    });
+                    console.log("checkedList : " + checkedStudentsAdList);
+                } else {
+                    $(".checkbox").each(function () {
+                        $(this).prop("checked", false);
+                        checkedStudentsAdList = [];
+                    });
+                    console.log("checkedList : " + checkedStudentsAdList);
+                }
+            });
+
+            $("#removeSelectedStudentActionBtn").click(function () {
+                var checkedValues = $('input:checkbox:checked').map(function () {
+                    return this.value;
+                }).get();
+                
+              
+                var index = checkedValues.indexOf("all");
+                
+                if(index === 0){
+                    checkedValues.splice(0, 1);
+                }
+                
+
+                if (checkedValues.length > 0) {
+                    console.log(checkedValues);
+                    removeStudentsFromTheClass(<%=currentClassId%>, checkedValues);
+                } else {
+                    console.log("nothing to remove");
+                    $("#checkAllStudents").prop("checked", false);
+                }
+
+            });
+
+            // Changing state of CheckAll checkbox 
+            $(".checkbox").change(function () {
+                console.log("clicked ");
+                if ($(".checkbox").length === $(".checkbox:checked").length) {
+                    $("#checkall").prop("checked", true);
+                } else {
+                    $("#checkall").removeAttr("checked");
+                }
+
+            });
             /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
             function myFunction() {
                 console.log("method started.");
@@ -592,7 +832,18 @@
                 }
             }
 
-            var admissionNumList = []; //maximum 10 students at once
+            $("#classTeacherName").click(function () {
+                console.log("teacher view button pressed.");
+                if ('<%=classTeacherData.getFirstName()%>' !== "Not") {
+                    $("#teacherDetailsViewButton").click();
+                } else {
+                    console.log("teacher not assigned.");
+                }
+
+            });
+
+            var admissionNumList = []; //maximum 10 students at once 
+            var teacherNicToAssign = null;
 
             function removeAChip(recAdNum) {
                 var index = admissionNumList.indexOf(recAdNum);
@@ -602,27 +853,156 @@
                 printChips();
 
             }
-            
-            function printChips(){//print all the chips
+
+            function removeATeacherChip() {
+                teacherNicToAssign = null;
+                printSelectedTeacherChip(null);
+
+            }
+
+            function printSelectedTeacherChip(teacherName) {
+                console.log("teacher chip print started.");
+                $("#teacherChipHolder").html("");
+                if (teacherNicToAssign !== null) {
+                    $("#teacherChipHolder").append("<div class='chip'>" + teacherName + "<span class='chipclosebtn' id='chipclosebtn" + teacherNicToAssign + "' onclick='removeATeacherChip()'>&times;</span></div>");
+                }
+            }
+
+            function printChips() {//print all the chips
                 $("#admChipHolder").html("");//clear exist chips
-                for(var i=0;i<admissionNumList.length;i++){
-                    $("#admChipHolder").append("<div class='chip'>" + admissionNumList[i] + "<span class='chipclosebtn' id='chipclosebtn"+admissionNumList[i]+"' onclick='removeAChip(" + admissionNumList[i] + ")'>&times;</span></div>");
+                for (var i = 0; i < admissionNumList.length; i++) {
+                    $("#admChipHolder").append("<div class='chip'>" + admissionNumList[i] + "<span class='chipclosebtn' id='chipclosebtn" + admissionNumList[i] + "' onclick='removeAChip(" + admissionNumList[i] + ")'>&times;</span></div>");
                 }
             }
 
             function studentSelectChip(recAdNum) {
-                //create a chip to show the selected student id
                 var index = admissionNumList.indexOf(recAdNum);
 
                 if (admissionNumList.length < 6 && index === -1) {
-                    //index is -1 ; new chip ;
                     admissionNumList.push(recAdNum);
                     printChips();
-                    //onclick='this.parentElement.style.display =`none`'
-                   // $("#admChipHolder").append("<div class='chip'>" + recAdNum + "<span class='chipclosebtn' id='chipclosebtn"+recAdNum+"' onclick='removeAChip(" + recAdNum + ")'>&times;</span></div>");
                 } else {
                     console.log("exist chip");
                 }
+            }
+
+            function teacherSelectChip(teacherNic, teacherName) {
+                console.log("teacher select chip function started. " + teacherNic + "  " + teacherName);
+                if (teacherNicToAssign !== teacherNic) {
+                    teacherNicToAssign = teacherNic;
+                    printSelectedTeacherChip(teacherName);
+                } else {
+                    console.log("exist teacher nic");
+                }
+
+            }
+
+            $("#assignedModalCloseButton").click(function () {
+                $('#addAnExistingStudentModal').removeData();
+            });
+
+            $("#assignTeacherStartButton").click(function () {
+                if (teacherNicToAssign !== null) {
+                    console.log("have to assign a teacher : " + teacherNicToAssign);
+                    assignTeacherToTheClass('<%=currentClassId%>', '<%=classTeacherData.getNic()%>', teacherNicToAssign);
+                } else {
+                    console.log("No teacher have selected to assign.");
+                }
+            });
+
+            $("#assignStartButton").click(function () {
+                if (admissionNumList.length > 0) {
+                    addExistingStudentsToTheClass(<%=currentClassId%>, admissionNumList);
+                } else {
+                    console.log("No students have selected to assign.");
+                }
+
+                // $("#assignedModalCloseButton").click();
+            });
+
+            function assignTeacherToTheClass(classId, oldTeacherNic, newTeacherNic) {
+                var dataObject = {
+                    classId: classId,
+                    oldTeacherNic: oldTeacherNic,
+                    newTeacherNic: newTeacherNic
+                };
+
+                $.ajax({
+                    type: "put",
+                    contentType: 'application/json; charset=utf-8',
+                    url: "http://localhost:8090/api/studentMg/class/assignTeacher",
+                    data: JSON.stringify(dataObject),
+                    crossDomain: true,
+                    dataType: "json",
+                    success: function (data) {
+
+                        $("#assignedTeacherModalCloseButton").click();
+                        console.log("received : " + data);
+
+                        if (data === null) {
+                            console.log("teacher assign failed.");
+                        } else {
+                            console.log("teacher assigned successfully." + data);
+                            window.location.reload();
+                        }
+                    }
+                });
+            }
+
+            function addExistingStudentsToTheClass(classId, admIdsList) {
+                var dataObject = {
+                    classId: classId,
+                    studentsAds: admIdsList
+                };
+
+                $.ajax({
+                    type: "put",
+                    contentType: 'application/json; charset=utf-8',
+                    url: "http://localhost:8090/api/studentMg/class/assignStudents",
+                    data: JSON.stringify(dataObject),
+                    crossDomain: true,
+                    dataType: "json",
+                    success: function (data) {
+                        $("#assignedModalCloseButton").click();
+                        console.log("received : " + data);
+                        if (data.length < 1) {
+                            console.log("students save failed.");
+                        } else {
+                            console.log("new class saved successfully." + data.length);
+//                            $('#noDataRow').remove();
+//                            for (var i = 0; i < data.length; i++) {
+//                                $('#studentTable > tbody:last-child').append('<tr><td>' + data[i].admissionNumber + '</td><td>' + data[i].firstName + ' ' + data[i].lastName + '</td><td>' + data[i].bday + '</td><td>' + data[i].address + '</td></tr>');
+//                            }
+                            window.location.reload();
+                        }
+                    }
+                });
+            }
+
+            function removeStudentsFromTheClass(classId, admIdsList) {
+                console.log("remove started.");
+                var dataObject = {
+                    classId: classId,
+                    studentsAds: admIdsList
+                };
+
+                $.ajax({
+                    type: "put",
+                    contentType: 'application/json; charset=utf-8',
+                    url: "http://localhost:8090/api/studentMg/class/removeStudents",
+                    data: JSON.stringify(dataObject),
+                    crossDomain: true,
+                    dataType: "json",
+                    success: function (data) {
+                        console.log("received : " + data);
+                        if (data.length < 1) {
+                            console.log("students remove failed.");
+                        } else {
+                            console.log("students removed successfully." + data.length);
+                            window.location.reload();
+                        }
+                    }
+                });
             }
 
             function searchFunction(args) {
@@ -647,6 +1027,8 @@
                     }
                 }
             }
+
+
 
 
 
