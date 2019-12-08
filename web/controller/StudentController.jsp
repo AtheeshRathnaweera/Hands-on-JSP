@@ -4,6 +4,7 @@
     Author     : User
 --%>
 
+<%@page import="lk.studentsmanage.models.StudentHistory"%>
 <%@page import="lk.studentsmanage.models.UserModel"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="lk.studentsmanage.services.StudentAPI"%>
@@ -21,9 +22,8 @@
 
 <%!
     StudentAPI studentAPI = RetrofitClient.getRetrofitClient(Values.MAINURL).getRetrofit().create(StudentAPI.class);
-    
-    public StudentModel getStudentDetails(String admissionNumber) {
 
+    public StudentModel getStudentDetails(String admissionNumber) {
 
         Call<StudentModel> studentDataCall = studentAPI.getStudentDetails(admissionNumber);
 
@@ -50,7 +50,7 @@
 
         try {
             results = studentCountCall.execute().body();
-            System.out.println("student : "+results);
+            System.out.println("student : " + results);
         } catch (Exception e) {
             System.out.println("Exception in Student controller : " + e);
 
@@ -74,6 +74,37 @@
         }
 
         return results;
+
+    }
+
+    public List<StudentHistory> getStudentHistory(String admissionNumber) {
+        Call<List<StudentHistory>> studentCountCall = studentAPI.getStudentHistory(admissionNumber);
+
+        List<StudentHistory> results = new ArrayList<>();
+
+        try {
+            results = studentCountCall.execute().body();
+
+        } catch (Exception e) {
+            System.out.println("Exception in Student controller : 88" + e);
+
+        }
+
+        return results;
+    }
+
+    public StudentHistory saveTheTermTestResults(StudentHistory recObject) {
+        Call<StudentHistory> studentResultSaveCall = studentAPI.saveTermTestResults(recObject);
+
+        StudentHistory result = null;
+
+        try {
+            result = studentResultSaveCall.execute().body();
+        } catch (Exception e) {
+            System.out.println("Exception in Student controller : 104" + e);
+
+        }
+        return result;
 
     }
 

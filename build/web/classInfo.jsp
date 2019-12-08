@@ -247,7 +247,7 @@
                             } else {
                                 console.log("new class saved successfully.");
                                 $('#noDataRow').remove();
-                                $('#studentTable > tbody:last-child').append('<tr><td>' + data.admissionNumber + '</td><td>' + data.firstName + ' ' + data.lastName + '</td><td>' + data.bday + '</td><td>' + data.address + '</td></tr>');
+                                $('#studentTable > tbody:last-child').append('<tr><td><input type="checkbox" class="checkbox" value="' + data.admissionNumber + '"></td><td style="text-align:center;"><a href="./results.jsp?admissionNumber='+data.admissionNumber+'"><i class="fa fa-fw fa-eye" style="color: green;  cursor:pointer;"></i></a></td><td>' + data.admissionNumber + '</td><td>' + data.firstName + ' ' + data.lastName + '</td><td>' + data.bday + '</td><td>' + data.address + '</td></tr>');
 
                             }
                             // $('#resultsShow').append(msg);
@@ -271,7 +271,7 @@
                             } else {
                                 $('#noDataRow').remove();
                                 for (var i = 0; i < data.length; i++) {
-                                    $('#studentTable > tbody:last-child').append('<tr><td><input type="checkbox" class="checkbox" value="' + data[i].admissionNumber + '"></td><td>' + data[i].admissionNumber + '</td><td>' + data[i].firstName + ' ' + data[i].lastName + '</td><td>' + data[i].bday + '</td><td>' + data[i].address + '</td></tr>');
+                                    $('#studentTable > tbody:last-child').append('<tr><td><input type="checkbox" class="checkbox" value="' + data[i].admissionNumber + '"></td><td style="text-align:center;"><a href="./results.jsp?admissionNumber='+data[i].admissionNumber+'"><i class="fa fa-fw fa-eye" style="color: green;  cursor:pointer;"></i></a></td><td>' + data[i].admissionNumber + '</td><td>' + data[i].firstName + ' ' + data[i].lastName + '</td><td>' + data[i].bday + '</td><td>' + data[i].address + '</td></tr>');
                                 }
                             }
                         }
@@ -432,6 +432,7 @@
                             <thead>
                                 <tr class="header">
                                     <th><input type="checkbox" id='checkAllStudents' value="all"></th>
+                                    <th style="width: 5%;">Results</th>
                                     <th style="width:20%;">Admission Number</th>
                                     <th style="width:30%;">Name</th>
                                     <th style="width:20%;">Birthday</th>

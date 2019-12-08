@@ -5,12 +5,14 @@
  */
 package lk.studentsmanage.services;
 
-import java.util.ArrayList;
+
 import java.util.List;
+import lk.studentsmanage.models.StudentHistory;
 import lk.studentsmanage.models.StudentModel;
-import lk.studentsmanage.models.UserModel;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -27,6 +29,12 @@ public interface StudentAPI {
     
     @GET("student/getall")
     Call<List<StudentModel>> getAllStudents();
+    
+    @GET("student/getStudentHistory/{admissionNum}")
+    Call<List<StudentHistory>> getStudentHistory(@Path("admissionNum") String admissionNum);
+    
+    @PUT("student/updateResults")
+    Call<StudentHistory> saveTermTestResults(@Body StudentHistory historyObj);
     
     
 

@@ -560,8 +560,10 @@
                                     </div>
 
                                     <div class="col-md-12" style="margin-top: 2%;">
+                                        
                                         <button  class="btn btn-primary" id="newStudentSaveBtn" style="float: right; width: 10%;">Save</button>
                                         <button  class="btn btn-primary" id="updateStudentSaveBtn" style="float: right; width: 10%;">Update</button>
+                                        <button class="btn btn-secondary" id="viewStudentsResultsBtn" style="float: right; width: 10%; margin-right: 10px;">View Results</button>
                                     </div>
                                 </form>
 
@@ -708,6 +710,7 @@
                                     <div class="col-md-12" style="margin-top: 2%;">
                                         <button type="submit" class="btn btn-primary" id="newTeacherSaveBtn" style="float: right; width: 10%;">Save</button>
                                         <button type="submit" class="btn btn-primary" id="updateTeacherBtn" style="float: right; width: 10%;">Update</button>
+                                        
                                     </div>
                                 </form>
 
@@ -941,6 +944,12 @@
                     console.log("search admission number is null. ");
                 }
             });
+            
+            //go to results page
+            $("#viewStudentsResultsBtn").click(function (){
+                var admissionNum = $('#sdDisplayAdmissionNumber').val().trim();
+                window.location.href = "./results.jsp?admissionNumber="+admissionNum;
+            });
 
             //add new student button action
             $("#addNewStudentButton").click(function () {
@@ -952,6 +961,7 @@
                 $("#displayInfoAdClassSection").css("display", "none");
 
                 $("#updateStudentSaveBtn").css("display", "none");
+                $("#viewStudentsResultsBtn").css("display","none");
                 $("#newStudentSaveBtn").css("display", "block");
 
                 $("#studentDetailsForm").closest('form').find("input[type=text],input[type=date]").val("");
@@ -1018,7 +1028,6 @@
                 }
 
             });
-
 
             //api requests
             function addNewStudent(studentData) {
@@ -1104,6 +1113,7 @@
                             $("#sdCurrentClassSelectSection").css("display", "none");
 
                             $("#updateStudentSaveBtn").css("display", "block");
+                            $("#viewStudentsResultsBtn").css("display","block");
                             $("#newStudentSaveBtn").css("display", "none");
 
                         } else {
